@@ -4,6 +4,10 @@ public class BaseDados {
 	private RobotLegoEV3 robot;
 	private boolean robotAberto;
 	private int distancia; 
+	private int angulo; 
+	private int raio; 
+	private String  nomeRobot;
+	
 	
 	public boolean isRobotAberto() {
 		return robotAberto;
@@ -41,6 +45,30 @@ public class BaseDados {
 
 	public void setDistancia(int distancia) {
 		this.distancia = distancia;
+	}
+
+	public int getAngulo() {
+		return angulo;
+	}
+
+	public void setAngulo(int angulo) {
+		this.angulo = angulo;
+	}
+
+	public int getRaio() {
+		return raio;
+	}
+
+	public void setRaio(int raio) {
+		this.raio = raio;
+	}
+
+	public String getNomeRobot() {
+		return nomeRobot;
+	}
+
+	public void setNomeRobot(String nomeRobot) {
+		this.nomeRobot = nomeRobot;
 	}
 	
 }
