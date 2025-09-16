@@ -145,7 +145,7 @@ public class GUI extends JFrame {
         
         JRadioButton rdbtnNewRadioButton = new JRadioButton("Movimentos Aleatórios");
         rdbtnNewRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
-        rdbtnNewRadioButton.setBounds(533, 150, 149, 40);
+        rdbtnNewRadioButton.setBounds(533, 187, 149, 40);
         contentPane.add(rdbtnNewRadioButton);
         
         textField_Angulo = new JTextField();
@@ -180,7 +180,7 @@ public class GUI extends JFrame {
         
         JSpinner spinner = new JSpinner();
         spinner.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        spinner.setBounds(471, 154, 56, 32);
+        spinner.setBounds(467, 191, 56, 32);
         contentPane.add(spinner);
         
         JScrollPane scrollPane = new JScrollPane();
@@ -189,6 +189,16 @@ public class GUI extends JFrame {
         
         JTextArea textArea = new JTextArea();
         scrollPane.setViewportView(textArea);
+        
+        JLabel label_Consola = new JLabel("Consola:");
+        label_Consola.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        label_Consola.setBounds(90, 221, 82, 16);
+        contentPane.add(label_Consola);
+        
+        JLabel label_Numero = new JLabel("Número:");
+        label_Numero.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        label_Numero.setBounds(415, 195, 65, 25);
+        contentPane.add(label_Numero);
 
         // Listener para fechar corretamente
         addWindowListener(new WindowAdapter() {
