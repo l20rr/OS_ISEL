@@ -24,10 +24,10 @@ public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private BaseDados db;
-    private JTextField out_textField;
-    private JTextField textField;
-    private JTextField textField_1;
-    private JTextField textField_2;
+    private JTextField textField_Distancia;
+    private JTextField textField_Angulo;
+    private JTextField textField_Robot;
+    private JTextField textField_Raio;
 
     private void MyPrint(String msg) {
         
@@ -89,27 +89,27 @@ public class GUI extends JFrame {
         rdbtnOnOff.setBounds(36, 30, 109, 23);
         contentPane.add(rdbtnOnOff);
 
-        JLabel btnlabel = new JLabel("ROBOT");
-        btnlabel.setBounds(36, 61, 56, 16);
-        contentPane.add(btnlabel);
+        JLabel btnLabel_ROBOT = new JLabel("ROBOT");
+        btnLabel_ROBOT.setBounds(36, 61, 56, 16);
+        contentPane.add(btnLabel_ROBOT);
 
-        out_textField = new JTextField();
-        out_textField.addActionListener(new ActionListener() {
+        textField_Distancia = new JTextField();
+        textField_Distancia.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!Beans.isDesignTime() && db != null) {
-                    db.setDistancia(Integer.parseInt(out_textField.getText()));
+                    db.setDistancia(Integer.parseInt(textField_Distancia.getText()));
                     MyPrint("a distancia foi alterada para : " + db.getDistancia());
                 }
             }
         });
-        out_textField.setBounds(430, 36, 50, 22);
-        contentPane.add(out_textField);
+        textField_Distancia.setBounds(430, 36, 50, 22);
+        contentPane.add(textField_Distancia);
         if (!Beans.isDesignTime() && db != null) {
-            out_textField.setText("" + db.getDistancia());
+            textField_Distancia.setText("" + db.getDistancia());
         } else {
-            out_textField.setText("0");
+            textField_Distancia.setText("0");
         }
-        out_textField.setColumns(10);
+        textField_Distancia.setColumns(10);
         
         JButton btnTras = new JButton("TRÁS");
         btnTras.setBackground(Color.RED);
@@ -145,42 +145,42 @@ public class GUI extends JFrame {
         
         JRadioButton rdbtnNewRadioButton = new JRadioButton("Movimentos Aleatórios");
         rdbtnNewRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
-        rdbtnNewRadioButton.setBounds(533, 150, 149, 40);
+        rdbtnNewRadioButton.setBounds(533, 187, 149, 40);
         contentPane.add(rdbtnNewRadioButton);
         
-        textField = new JTextField();
-        textField.setColumns(10);
-        textField.setBounds(210, 36, 50, 22);
-        contentPane.add(textField);
+        textField_Angulo = new JTextField();
+        textField_Angulo.setColumns(10);
+        textField_Angulo.setBounds(210, 36, 50, 22);
+        contentPane.add(textField_Angulo);
         
-        textField_1 = new JTextField();
-        textField_1.setColumns(10);
-        textField_1.setBounds(78, 59, 50, 22);
-        contentPane.add(textField_1);
+        textField_Robot = new JTextField();
+        textField_Robot.setColumns(10);
+        textField_Robot.setBounds(78, 59, 50, 22);
+        contentPane.add(textField_Robot);
         
-        textField_2 = new JTextField();
-        textField_2.setColumns(10);
-        textField_2.setBounds(308, 36, 50, 22);
-        contentPane.add(textField_2);
+        textField_Raio = new JTextField();
+        textField_Raio.setColumns(10);
+        textField_Raio.setBounds(308, 36, 50, 22);
+        contentPane.add(textField_Raio);
         
-        JLabel btnlabel_1 = new JLabel("Distância ");
-        btnlabel_1.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        btnlabel_1.setBounds(369, 30, 70, 32);
-        contentPane.add(btnlabel_1);
+        JLabel btnLabel_Distancia = new JLabel("Distância ");
+        btnLabel_Distancia.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        btnLabel_Distancia.setBounds(369, 30, 70, 32);
+        contentPane.add(btnLabel_Distancia);
         
-        JLabel btnlabel_1_1 = new JLabel("Ângulo");
-        btnlabel_1_1.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        btnlabel_1_1.setBounds(166, 30, 70, 32);
-        contentPane.add(btnlabel_1_1);
+        JLabel btnLabel_Angulo = new JLabel("Ângulo");
+        btnLabel_Angulo.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        btnLabel_Angulo.setBounds(166, 30, 70, 32);
+        contentPane.add(btnLabel_Angulo);
         
-        JLabel btnlabel_1_1_1 = new JLabel("Raio");
-        btnlabel_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        btnlabel_1_1_1.setBounds(277, 30, 34, 32);
-        contentPane.add(btnlabel_1_1_1);
+        JLabel btnLabel_Raio = new JLabel("Raio");
+        btnLabel_Raio.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        btnLabel_Raio.setBounds(277, 30, 34, 32);
+        contentPane.add(btnLabel_Raio);
         
         JSpinner spinner = new JSpinner();
         spinner.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        spinner.setBounds(471, 154, 56, 32);
+        spinner.setBounds(467, 191, 56, 32);
         contentPane.add(spinner);
         
         JScrollPane scrollPane = new JScrollPane();
@@ -189,6 +189,16 @@ public class GUI extends JFrame {
         
         JTextArea textArea = new JTextArea();
         scrollPane.setViewportView(textArea);
+        
+        JLabel label_Consola = new JLabel("Consola:");
+        label_Consola.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        label_Consola.setBounds(90, 221, 82, 16);
+        contentPane.add(label_Consola);
+        
+        JLabel label_Numero = new JLabel("Número:");
+        label_Numero.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        label_Numero.setBounds(415, 195, 65, 25);
+        contentPane.add(label_Numero);
 
         // Listener para fechar corretamente
         addWindowListener(new WindowAdapter() {
