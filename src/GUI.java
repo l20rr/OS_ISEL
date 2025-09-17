@@ -28,10 +28,10 @@ public class GUI extends JFrame {
     private JTextField textField_Angulo;
     private JTextField textField_Robot;
     private JTextField textField_Raio;
+    private JTextArea textArea_console;
 
     private void MyPrint(String msg) {
-        
-        System.out.println(msg);
+        textArea_console.append(msg + "\n"); // imprime na consola da GUI
     }
 
     /**
@@ -110,91 +110,103 @@ public class GUI extends JFrame {
             textField_Distancia.setText("0");
         }
         textField_Distancia.setColumns(10);
-        
+
+        // Movimento Tras
         JButton btnTras = new JButton("TRÁS");
         btnTras.setBackground(Color.RED);
         btnTras.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
+            public void actionPerformed(ActionEvent e) {
+                MyPrint("movimento para trás acionado");
+            }
         });
         btnTras.setBounds(237, 171, 99, 32);
         contentPane.add(btnTras);
-        
+
+        // Movimento PARAR
         JButton btnParar = new JButton("PARAR");
         btnParar.setBackground(Color.ORANGE);
         btnParar.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
+            public void actionPerformed(ActionEvent e) {
+                MyPrint("movimento parar acionado");
+            }
         });
         btnParar.setBounds(237, 140, 99, 32);
         contentPane.add(btnParar);
-        
+
+        // Movimento direita
         JButton btnDir = new JButton("DIREITA");
+        btnDir.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                MyPrint("movimento direita acionado");
+            }
+        });
         btnDir.setBackground(Color.CYAN);
         btnDir.setBounds(335, 140, 99, 32);
         contentPane.add(btnDir);
-        
+
+        // Movimento Esquerda
         JButton btnEsq = new JButton("ESQUERDA");
         btnEsq.setBackground(Color.CYAN);
         btnEsq.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
+            public void actionPerformed(ActionEvent e) {
+                MyPrint("movimento esquerda acionado");
+            }
         });
         btnEsq.setBounds(139, 140, 99, 32);
         contentPane.add(btnEsq);
-        
+
         JRadioButton rdbtnNewRadioButton = new JRadioButton("Movimentos Aleatórios");
         rdbtnNewRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
         rdbtnNewRadioButton.setBounds(533, 187, 149, 40);
         contentPane.add(rdbtnNewRadioButton);
-        
+
         textField_Angulo = new JTextField();
         textField_Angulo.setColumns(10);
         textField_Angulo.setBounds(210, 36, 50, 22);
         contentPane.add(textField_Angulo);
-        
+
         textField_Robot = new JTextField();
         textField_Robot.setColumns(10);
         textField_Robot.setBounds(78, 59, 50, 22);
         contentPane.add(textField_Robot);
-        
+
         textField_Raio = new JTextField();
         textField_Raio.setColumns(10);
         textField_Raio.setBounds(308, 36, 50, 22);
         contentPane.add(textField_Raio);
-        
+
         JLabel btnLabel_Distancia = new JLabel("Distância ");
         btnLabel_Distancia.setFont(new Font("Tahoma", Font.PLAIN, 13));
         btnLabel_Distancia.setBounds(369, 30, 70, 32);
         contentPane.add(btnLabel_Distancia);
-        
+
         JLabel btnLabel_Angulo = new JLabel("Ângulo");
         btnLabel_Angulo.setFont(new Font("Tahoma", Font.PLAIN, 13));
         btnLabel_Angulo.setBounds(166, 30, 70, 32);
         contentPane.add(btnLabel_Angulo);
-        
+
         JLabel btnLabel_Raio = new JLabel("Raio");
         btnLabel_Raio.setFont(new Font("Tahoma", Font.PLAIN, 13));
         btnLabel_Raio.setBounds(277, 30, 34, 32);
         contentPane.add(btnLabel_Raio);
-        
+
         JSpinner spinner = new JSpinner();
         spinner.setFont(new Font("Tahoma", Font.PLAIN, 13));
         spinner.setBounds(467, 191, 56, 32);
         contentPane.add(spinner);
-        
+
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(90, 246, 563, 95);
         contentPane.add(scrollPane);
-        
-        JTextArea textArea = new JTextArea();
-        scrollPane.setViewportView(textArea);
-        
+
+        textArea_console = new JTextArea(); // inicialização aqui
+        scrollPane.setViewportView(textArea_console);
+
         JLabel label_Consola = new JLabel("Consola:");
         label_Consola.setFont(new Font("Tahoma", Font.PLAIN, 13));
         label_Consola.setBounds(90, 221, 82, 16);
         contentPane.add(label_Consola);
-        
+
         JLabel label_Numero = new JLabel("Número:");
         label_Numero.setFont(new Font("Tahoma", Font.PLAIN, 13));
         label_Numero.setBounds(415, 195, 65, 25);
