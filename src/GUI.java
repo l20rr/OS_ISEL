@@ -53,7 +53,7 @@ public class GUI extends JFrame {
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(null);
-
+///////////////////////---------------------------------BTNs--------------------------------------
         // Botão "Reta"
         JButton btnFrente = new JButton("FRENTE");
         btnFrente.setBackground(Color.GREEN);
@@ -68,49 +68,7 @@ public class GUI extends JFrame {
         });
         btnFrente.setBounds(237, 108, 99, 32);
         contentPane.add(btnFrente);
-
-        // Botao On Off
-        JRadioButton rdbtnOnOff = new JRadioButton("On/Off");
-        rdbtnOnOff.setBackground(new Color(0, 128, 0));
-        rdbtnOnOff.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (!Beans.isDesignTime() && db != null) {
-                    if (db.isRobotAberto()) {
-                        db.getRobot().CloseEV3();
-                        db.setRobotAberto(false);
-                    } else {
-                        db.setRobotAberto(db.getRobot().OpenEV3("EV2"));
-                    }
-                    rdbtnOnOff.setSelected(db.isRobotAberto());
-                    MyPrint("o robo foi " + (db.isRobotAberto() ? "aberto" : "fechado"));
-                }
-            }
-        });
-        rdbtnOnOff.setBounds(36, 30, 109, 23);
-        contentPane.add(rdbtnOnOff);
-
-        JLabel btnLabel_ROBOT = new JLabel("ROBOT");
-        btnLabel_ROBOT.setBounds(36, 61, 56, 16);
-        contentPane.add(btnLabel_ROBOT);
-
-        textField_Distancia = new JTextField();
-        textField_Distancia.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (!Beans.isDesignTime() && db != null) {
-                    db.setDistancia(Integer.parseInt(textField_Distancia.getText()));
-                    MyPrint("a distancia foi alterada para : " + db.getDistancia());
-                }
-            }
-        });
-        textField_Distancia.setBounds(430, 36, 50, 22);
-        contentPane.add(textField_Distancia);
-        if (!Beans.isDesignTime() && db != null) {
-            textField_Distancia.setText("" + db.getDistancia());
-        } else {
-            textField_Distancia.setText("0");
-        }
-        textField_Distancia.setColumns(10);
-
+        
         // Movimento Tras
         JButton btnTras = new JButton("TRÁS");
         btnTras.setBackground(Color.RED);
@@ -154,47 +112,118 @@ public class GUI extends JFrame {
         });
         btnEsq.setBounds(139, 140, 99, 32);
         contentPane.add(btnEsq);
-
+////------------------------------------Radio BTN -------------------
+        // Botao On Off
+        JRadioButton rdbtnOnOff = new JRadioButton("On/Off");
+        rdbtnOnOff.setBackground(new Color(0, 128, 0));
+        rdbtnOnOff.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!Beans.isDesignTime() && db != null) {
+                    if (db.isRobotAberto()) {
+                        db.getRobot().CloseEV3();
+                        db.setRobotAberto(false);
+                    } else {
+                        db.setRobotAberto(db.getRobot().OpenEV3("EV2"));
+                    }
+                    rdbtnOnOff.setSelected(db.isRobotAberto());
+                    MyPrint("o robo foi " + (db.isRobotAberto() ? "aberto" : "fechado"));
+                }
+            }
+        });
+        rdbtnOnOff.setBounds(36, 30, 109, 23);
+        contentPane.add(rdbtnOnOff);
+        
         JRadioButton rdbtnNewRadioButton = new JRadioButton("Movimentos Aleatórios");
+        rdbtnNewRadioButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	}
+        });
         rdbtnNewRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
         rdbtnNewRadioButton.setBounds(533, 187, 149, 40);
         contentPane.add(rdbtnNewRadioButton);
+        
+        ///////////////---------- textField -------------
 
-        textField_Angulo = new JTextField();
-        textField_Angulo.setColumns(10);
-        textField_Angulo.setBounds(210, 36, 50, 22);
-        contentPane.add(textField_Angulo);
-
-        textField_Robot = new JTextField();
-        textField_Robot.setColumns(10);
-        textField_Robot.setBounds(78, 59, 50, 22);
-        contentPane.add(textField_Robot);
-
-        textField_Raio = new JTextField();
-        textField_Raio.setColumns(10);
-        textField_Raio.setBounds(308, 36, 50, 22);
-        contentPane.add(textField_Raio);
-
+//Distancia
         JLabel btnLabel_Distancia = new JLabel("Distância ");
         btnLabel_Distancia.setFont(new Font("Tahoma", Font.PLAIN, 13));
         btnLabel_Distancia.setBounds(369, 30, 70, 32);
         contentPane.add(btnLabel_Distancia);
+        
+        textField_Distancia = new JTextField();
+        textField_Distancia.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!Beans.isDesignTime() && db != null) {
+                    db.setDistancia(Integer.parseInt(textField_Distancia.getText()));
+                    MyPrint("a distancia foi alterada para : " + db.getDistancia());
+                }
+            }
+        });
+        textField_Distancia.setBounds(430, 36, 50, 22);
+        contentPane.add(textField_Distancia);
+        if (!Beans.isDesignTime() && db != null) {
+            textField_Distancia.setText("" + db.getDistancia());
+        } else {
+            textField_Distancia.setText("0");
+        }
+        textField_Distancia.setColumns(10);
 
+//angulo
         JLabel btnLabel_Angulo = new JLabel("Ângulo");
         btnLabel_Angulo.setFont(new Font("Tahoma", Font.PLAIN, 13));
         btnLabel_Angulo.setBounds(166, 30, 70, 32);
         contentPane.add(btnLabel_Angulo);
+        
+        textField_Angulo = new JTextField();
+        textField_Angulo.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	}
+        });
+        textField_Angulo.setColumns(10);
+        textField_Angulo.setBounds(210, 36, 50, 22);
+        contentPane.add(textField_Angulo);
 
+//Robot name
+        JLabel btnLabel_ROBOT = new JLabel("ROBOT");
+        btnLabel_ROBOT.setBounds(511, 38, 56, 16);
+        contentPane.add(btnLabel_ROBOT);
+        
+        textField_Robot = new JTextField();
+        textField_Robot.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	}
+        });
+        textField_Robot.setColumns(10);
+        textField_Robot.setBounds(550, 36, 50, 22);
+        contentPane.add(textField_Robot);
+// RAIO
         JLabel btnLabel_Raio = new JLabel("Raio");
         btnLabel_Raio.setFont(new Font("Tahoma", Font.PLAIN, 13));
         btnLabel_Raio.setBounds(277, 30, 34, 32);
         contentPane.add(btnLabel_Raio);
+        
+        textField_Raio = new JTextField();
+        textField_Raio.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	}
+        });
+        textField_Raio.setColumns(10);
+        textField_Raio.setBounds(308, 36, 50, 22);
+        contentPane.add(textField_Raio);
+
+
+      //////////////////////********************///////////////
+      
+        JLabel label_Numero = new JLabel("Número:");
+        label_Numero.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        label_Numero.setBounds(415, 195, 65, 25);
+        contentPane.add(label_Numero);
 
         JSpinner spinner = new JSpinner();
         spinner.setFont(new Font("Tahoma", Font.PLAIN, 13));
         spinner.setBounds(467, 191, 56, 32);
         contentPane.add(spinner);
-
+////////////---------consola -------------
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(90, 246, 563, 95);
         contentPane.add(scrollPane);
@@ -207,10 +236,6 @@ public class GUI extends JFrame {
         label_Consola.setBounds(90, 221, 82, 16);
         contentPane.add(label_Consola);
 
-        JLabel label_Numero = new JLabel("Número:");
-        label_Numero.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        label_Numero.setBounds(415, 195, 65, 25);
-        contentPane.add(label_Numero);
 
         // Listener para fechar corretamente
         addWindowListener(new WindowAdapter() {
