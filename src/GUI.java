@@ -74,7 +74,11 @@ public class GUI extends JFrame {
         btnTras.setBackground(Color.RED);
         btnTras.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                MyPrint("movimento para trás acionado");
+                if (!Beans.isDesignTime() && db != null) {
+                    db.getRobot().Reta(-(db.getDistancia()));
+                    db.getRobot().Parar(false);
+                    MyPrint("fiz uma marcha tras com " + db.getDistancia());
+                }
             }
         });
         btnTras.setBounds(237, 171, 99, 32);
@@ -177,6 +181,7 @@ public class GUI extends JFrame {
         textField_Angulo = new JTextField();
         textField_Angulo.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		
         	}
         });
         textField_Angulo.setColumns(10);
