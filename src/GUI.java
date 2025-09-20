@@ -53,6 +53,7 @@ public class GUI extends JFrame {
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(null);
+
 ///////////////////////---------------------------------BTNs--------------------------------------
         // Botão "Reta"
         JButton btnFrente = new JButton("FRENTE");
@@ -116,37 +117,40 @@ public class GUI extends JFrame {
         });
         btnEsq.setBounds(139, 140, 99, 32);
         contentPane.add(btnEsq);
+
 ////------------------------------------Radio BTN -------------------
-        // Botao On Off
+     // Botao On Off
         JRadioButton rdbtnOnOff = new JRadioButton("On/Off");
         rdbtnOnOff.setBackground(new Color(0, 128, 0));
         rdbtnOnOff.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!Beans.isDesignTime() && db != null) {
                     if (db.isRobotAberto()) {
+                        // Desligar
                         db.getRobot().CloseEV3();
                         db.setRobotAberto(false);
+                        textField_Robot.setText("");
                     } else {
-                        db.setRobotAberto(db.getRobot().OpenEV3("EV2"));
+                        // Ligar
+                        boolean aberto = db.getRobot().OpenEV3("EV2"); 
+                        db.setRobotAberto(aberto);
+
+                        if (aberto) {
+                           
+                            textField_Robot.setText(db.getRobot().getRobotName());
+                        }
                     }
                     rdbtnOnOff.setSelected(db.isRobotAberto());
                     MyPrint("o robo foi " + (db.isRobotAberto() ? "aberto" : "fechado"));
                 }
             }
         });
+
         rdbtnOnOff.setBounds(36, 30, 109, 23);
         contentPane.add(rdbtnOnOff);
+
         
-        JRadioButton rdbtnNewRadioButton = new JRadioButton("Movimentos Aleatórios");
-        rdbtnNewRadioButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
-        });
-        rdbtnNewRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
-        rdbtnNewRadioButton.setBounds(533, 187, 149, 40);
-        contentPane.add(rdbtnNewRadioButton);
-        
-        ///////////////---------- textField -------------
+///////////////////---------- textField -------------
 
 //Distancia
         JLabel btnLabel_Distancia = new JLabel("Distância ");
@@ -180,13 +184,21 @@ public class GUI extends JFrame {
         
         textField_Angulo = new JTextField();
         textField_Angulo.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		
-        	}
+            public void actionPerformed(ActionEvent e) {
+                if (!Beans.isDesignTime() && db != null) {
+                    db.setAngulo(Integer.parseInt(textField_Angulo.getText()));
+                    MyPrint("o ângulo foi alterado para : " + db.getAngulo());
+                }
+            }
         });
         textField_Angulo.setColumns(10);
         textField_Angulo.setBounds(210, 36, 50, 22);
         contentPane.add(textField_Angulo);
+        if (!Beans.isDesignTime() && db != null) {
+            textField_Angulo.setText("" + db.getAngulo());
+        } else {
+            textField_Angulo.setText("0");
+        }
 
 //Robot name
         JLabel btnLabel_ROBOT = new JLabel("ROBOT");
@@ -194,13 +206,10 @@ public class GUI extends JFrame {
         contentPane.add(btnLabel_ROBOT);
         
         textField_Robot = new JTextField();
-        textField_Robot.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
-        });
         textField_Robot.setColumns(10);
         textField_Robot.setBounds(550, 36, 50, 22);
         contentPane.add(textField_Robot);
+
 // RAIO
         JLabel btnLabel_Raio = new JLabel("Raio");
         btnLabel_Raio.setFont(new Font("Tahoma", Font.PLAIN, 13));
@@ -209,15 +218,23 @@ public class GUI extends JFrame {
         
         textField_Raio = new JTextField();
         textField_Raio.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
+            public void actionPerformed(ActionEvent e) {
+                if (!Beans.isDesignTime() && db != null) {
+                    db.setRaio(Integer.parseInt(textField_Raio.getText()));
+                    MyPrint("o raio foi alterado para : " + db.getRaio());
+                }
+            }
         });
         textField_Raio.setColumns(10);
         textField_Raio.setBounds(308, 36, 50, 22);
         contentPane.add(textField_Raio);
+        if (!Beans.isDesignTime() && db != null) {
+            textField_Raio.setText("" + db.getRaio());
+        } else {
+            textField_Raio.setText("0");
+        }
 
-
-      //////////////////////********************///////////////
+//////////////////////********************///////////////
       
         JLabel label_Numero = new JLabel("Número:");
         label_Numero.setFont(new Font("Tahoma", Font.PLAIN, 13));
@@ -228,6 +245,7 @@ public class GUI extends JFrame {
         spinner.setFont(new Font("Tahoma", Font.PLAIN, 13));
         spinner.setBounds(467, 191, 56, 32);
         contentPane.add(spinner);
+
 ////////////---------consola -------------
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(90, 246, 563, 95);
@@ -240,7 +258,6 @@ public class GUI extends JFrame {
         label_Consola.setFont(new Font("Tahoma", Font.PLAIN, 13));
         label_Consola.setBounds(90, 221, 82, 16);
         contentPane.add(label_Consola);
-
 
         // Listener para fechar corretamente
         addWindowListener(new WindowAdapter() {
