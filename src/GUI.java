@@ -72,7 +72,7 @@ public class GUI extends JFrame {
         
         // Movimento Tras
         JButton btnTras = new JButton("TRÁS");
-        btnTras.setBackground(Color.RED);
+        btnTras.setBackground(new Color(255, 128, 64));
         btnTras.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!Beans.isDesignTime() && db != null) {
@@ -87,7 +87,7 @@ public class GUI extends JFrame {
 
         // Movimento PARAR
         JButton btnParar = new JButton("PARAR");
-        btnParar.setBackground(Color.ORANGE);
+        btnParar.setBackground(new Color(255, 0, 0));
         btnParar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MyPrint("movimento parar acionado");
@@ -103,13 +103,13 @@ public class GUI extends JFrame {
                 MyPrint("movimento direita acionado");
             }
         });
-        btnDir.setBackground(Color.CYAN);
+        btnDir.setBackground(new Color(0, 0, 255));
         btnDir.setBounds(335, 140, 99, 32);
         contentPane.add(btnDir);
 
         // Movimento Esquerda
         JButton btnEsq = new JButton("ESQUERDA");
-        btnEsq.setBackground(Color.CYAN);
+        btnEsq.setBackground(new Color(255, 128, 192));
         btnEsq.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MyPrint("movimento esquerda acionado");
@@ -121,7 +121,7 @@ public class GUI extends JFrame {
 ////------------------------------------Radio BTN -------------------
      // Botao On Off
         JRadioButton rdbtnOnOff = new JRadioButton("On/Off");
-        rdbtnOnOff.setBackground(new Color(0, 128, 0));
+        rdbtnOnOff.setBackground(new Color(255, 255, 255));
         rdbtnOnOff.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!Beans.isDesignTime() && db != null) {
@@ -202,12 +202,12 @@ public class GUI extends JFrame {
 
 //Robot name
         JLabel btnLabel_ROBOT = new JLabel("ROBOT");
-        btnLabel_ROBOT.setBounds(511, 38, 56, 16);
+        btnLabel_ROBOT.setBounds(516, 37, 56, 16);
         contentPane.add(btnLabel_ROBOT);
         
         textField_Robot = new JTextField();
         textField_Robot.setColumns(10);
-        textField_Robot.setBounds(550, 36, 50, 22);
+        textField_Robot.setBounds(575, 31, 50, 22);
         contentPane.add(textField_Robot);
 
 // RAIO
@@ -258,6 +258,11 @@ public class GUI extends JFrame {
         label_Consola.setFont(new Font("Tahoma", Font.PLAIN, 13));
         label_Consola.setBounds(90, 221, 82, 16);
         contentPane.add(label_Consola);
+        
+        JRadioButton rdbtnMovAlt = new JRadioButton("Movimentos Aleatórios");
+        rdbtnMovAlt.setBackground(Color.WHITE);
+        rdbtnMovAlt.setBounds(529, 198, 135, 23);
+        contentPane.add(rdbtnMovAlt);
 
         // Listener para fechar corretamente
         addWindowListener(new WindowAdapter() {
