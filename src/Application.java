@@ -5,7 +5,7 @@ public class Application {
     public Application() {
         db = new BaseDados();
         gui = new GUI(this);
-        gui.setVisible(true); // importante para mostrar a janela
+        gui.setVisible(true);
     }
 
     public BaseDados getDB() {
