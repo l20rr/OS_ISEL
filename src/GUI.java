@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JSpinner;
+import javax.swing.JCheckBox;
 
 public class GUI extends JFrame {
 
@@ -114,6 +115,13 @@ public class GUI extends JFrame {
         });
         btnEsq.setBounds(139, 140, 99, 32);
         contentPane.add(btnEsq);
+////-----------------------------------------------------------------------
+///        
+        JCheckBox checkLigar = new JCheckBox("Ligar");
+        checkLigar.setBounds(36, 65, 97, 23);
+        contentPane.add(checkLigar);
+        checkLigar.setSelected(db.isRobotAberto());
+
 
 ////------------------------------------Radio BTN -------------------
         // Botao On Off
@@ -131,12 +139,13 @@ public class GUI extends JFrame {
                         // Ligar
                         boolean aberto = db.getRobot().OpenEV3("EV2");
                         db.setRobotAberto(aberto);
-
                         if (aberto) {
                             textField_Robot.setText(db.getRobot().getRobotName());
                         }
                     }
                     rdbtnOnOff.setSelected(db.isRobotAberto());
+                    checkLigar.setSelected(db.isRobotAberto());
+                    
                     MyPrint("o robo foi " + (db.isRobotAberto() ? "aberto" : "fechado"));
                 }
             }
@@ -256,7 +265,9 @@ public class GUI extends JFrame {
         rdbtnMovAlt.setBackground(Color.WHITE);
         rdbtnMovAlt.setBounds(529, 198, 135, 23);
         contentPane.add(rdbtnMovAlt);
-
+        
+        
+        setVisible(true);
         // Listener para fechar corretamente
         addWindowListener(new WindowAdapter() {
             @Override
@@ -277,5 +288,4 @@ public class GUI extends JFrame {
     public void setDB(BaseDados db) {
         this.db = db;
     }
-    //miguel 2025
 }
