@@ -100,8 +100,9 @@ public class GUI extends JFrame {
         btnDir.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 db.getRobot().CurvarDireita(db.getRaio(),db.getAngulo());
-                //parar
                 MyPrint("movimento direita acionado");
+                db.getRobot().Parar(false);
+                MyPrint("robot parou de curvar");
             }
         });
         btnDir.setBackground(new Color(0, 0, 255));
@@ -114,8 +115,10 @@ public class GUI extends JFrame {
         btnEsq.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	db.getRobot().CurvarEsquerda(db.getRaio(),db.getAngulo());
-            	//para
-                MyPrint("movimento esquerda acionado");
+            	MyPrint("movimento esquerda acionado");
+            	db.getRobot().Parar(false);
+            	MyPrint("robot parou de curvar");
+                
             }
         });
         btnEsq.setBounds(139, 140, 99, 32);
