@@ -88,7 +88,8 @@ public class GUI extends JFrame {
         btnParar.setBackground(new Color(255, 0, 0));
         btnParar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                MyPrint("movimento parar acionado");
+                db.getRobot().Parar(true);
+                MyPrint("robot parou");   
             }
         });
         btnParar.setBounds(237, 140, 99, 32);
@@ -98,6 +99,7 @@ public class GUI extends JFrame {
         JButton btnDir = new JButton("DIREITA");
         btnDir.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                db.getRobot().CurvarDireita(db.getRaio(),db.getAngulo());
                 MyPrint("movimento direita acionado");
             }
         });
@@ -110,6 +112,7 @@ public class GUI extends JFrame {
         btnEsq.setBackground(new Color(255, 128, 192));
         btnEsq.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	db.getRobot().CurvarEsquerda(db.getRaio(),db.getAngulo());
                 MyPrint("movimento esquerda acionado");
             }
         });
@@ -140,7 +143,7 @@ public class GUI extends JFrame {
                         boolean aberto = db.getRobot().OpenEV3("EV2");
                         db.setRobotAberto(aberto);
                         if (aberto) {
-                            textField_Robot.setText(db.getRobot().getRobotName());
+                            textField_Robot.setText(db.getNomeRobot());
                         }
                     }
                     rdbtnOnOff.setSelected(db.isRobotAberto());
@@ -149,7 +152,7 @@ public class GUI extends JFrame {
                     MyPrint("o robo foi " + (db.isRobotAberto() ? "aberto" : "fechado"));
                 }
             }
-        });
+        }); 
 
         rdbtnOnOff.setBounds(36, 30, 109, 23);
         contentPane.add(rdbtnOnOff);
@@ -266,8 +269,7 @@ public class GUI extends JFrame {
         rdbtnMovAlt.setBounds(529, 198, 135, 23);
         contentPane.add(rdbtnMovAlt);
         
-        
-        setVisible(true);
+
         // Listener para fechar corretamente
         addWindowListener(new WindowAdapter() {
             @Override
