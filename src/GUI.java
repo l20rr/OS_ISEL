@@ -88,7 +88,10 @@ public class GUI extends JFrame {
         btnParar.setBackground(new Color(255, 0, 0));
         btnParar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                MyPrint("movimento parar acionado");
+             
+                db.getRobot().Parar(true);
+                MyPrint("robot parou");
+                
             }
         });
         btnParar.setBounds(237, 140, 99, 32);
@@ -141,7 +144,7 @@ public class GUI extends JFrame {
                     MyPrint("o robo foi " + (db.isRobotAberto() ? "aberto" : "fechado"));
                 }
             }
-        });
+        }); 
 
         rdbtnOnOff.setBounds(36, 30, 109, 23);
         contentPane.add(rdbtnOnOff);
