@@ -100,6 +100,7 @@ public class GUI extends JFrame {
         btnDir.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 db.getRobot().CurvarDireita(db.getRaio(),db.getAngulo());
+                //parar
                 MyPrint("movimento direita acionado");
             }
         });
@@ -113,6 +114,7 @@ public class GUI extends JFrame {
         btnEsq.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	db.getRobot().CurvarEsquerda(db.getRaio(),db.getAngulo());
+            	//para
                 MyPrint("movimento esquerda acionado");
             }
         });
@@ -140,7 +142,7 @@ public class GUI extends JFrame {
                         textField_Robot.setText("");
                     } else {
                         // Ligar
-                        boolean aberto = db.getRobot().OpenEV3("EV2");
+                        boolean aberto = db.getRobot().OpenEV3("EV7"); 
                         db.setRobotAberto(aberto);
                         if (aberto) {
                             textField_Robot.setText(db.getNomeRobot());
