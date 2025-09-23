@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JSpinner;
+import javax.swing.JCheckBox;
 
 public class GUI extends JFrame {
 
@@ -136,7 +137,7 @@ public class GUI extends JFrame {
                         db.setRobotAberto(aberto);
 
                         if (aberto) {
-                            textField_Robot.setText(db.getRobot().getRobotName());
+                            textField_Robot.setText(db.getNomeRobot());
                         }
                     }
                     rdbtnOnOff.setSelected(db.isRobotAberto());
@@ -259,6 +260,9 @@ public class GUI extends JFrame {
         rdbtnMovAlt.setBackground(Color.WHITE);
         rdbtnMovAlt.setBounds(529, 198, 135, 23);
         contentPane.add(rdbtnMovAlt);
+        
+
+   
 
         // Listener para fechar corretamente
         addWindowListener(new WindowAdapter() {
@@ -280,5 +284,4 @@ public class GUI extends JFrame {
     public void setDB(BaseDados db) {
         this.db = db;
     }
-    //miguel 2025
 }
