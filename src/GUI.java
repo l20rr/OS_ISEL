@@ -277,4 +277,5 @@ public class GUI extends JFrame {
     public void setDB(BaseDados db) {
         this.db = db;
     }
+    //miguel 2025
 }
