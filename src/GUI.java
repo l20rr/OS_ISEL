@@ -103,7 +103,7 @@ public class GUI extends JFrame {
                 db.getRobot().Parar(false);
                 MyPrint("movimento direita acionado");
                 db.getRobot().Parar(false);
-                MyPrint("robot parou de curvar");
+                MyPrint("robot fez uma curva com angulo" + db.getAngulo() + " , e raio: " + db.getRaio() + " para direita");
             }
         });
         btnDir.setBackground(new Color(0, 0, 255));
@@ -119,25 +119,23 @@ public class GUI extends JFrame {
             	db.getRobot().CurvarEsquerda(db.getRaio(),db.getAngulo());
             	MyPrint("movimento esquerda acionado");
             	db.getRobot().Parar(false);
-            	MyPrint("robot parou de curvar");
+            	   MyPrint("robot fez uma curva com angulo" + db.getAngulo() + " , e raio: " + db.getRaio() + " para esquerda");
                 
             }
         });
         btnEsq.setBounds(139, 140, 99, 32);
         contentPane.add(btnEsq);
 ////-----------------------------------------------------------------------
-///        
+     // CheckBox "Ligar"
         JCheckBox checkLigar = new JCheckBox("Ligar");
-        checkLigar.setBounds(36, 65, 97, 23);
+        checkLigar.setBounds(36, 36, 97, 23);
         contentPane.add(checkLigar);
+
+        // Estado inicial de acordo com o banco
         checkLigar.setSelected(db.isRobotAberto());
 
-
-////------------------------------------Radio BTN -------------------
-        // Botao On Off
-        JRadioButton rdbtnOnOff = new JRadioButton("On/Off");
-        rdbtnOnOff.setBackground(new Color(255, 255, 255));
-        rdbtnOnOff.addActionListener(new ActionListener() {
+        // Listener para ligar/desligar
+        checkLigar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!Beans.isDesignTime() && db != null) {
                     if (db.isRobotAberto()) {
@@ -147,22 +145,19 @@ public class GUI extends JFrame {
                         textField_Robot.setText("");
                     } else {
                         // Ligar
-
                         boolean aberto = db.getRobot().OpenEV3(db.getNomeRobot());
-
                         db.setRobotAberto(aberto);
                         textField_Robot.setText(db.getNomeRobot());
                     }
-                    rdbtnOnOff.setSelected(db.isRobotAberto());
+                    
+                    // Mantém o estado do checkBox sincronizado
                     checkLigar.setSelected(db.isRobotAberto());
                     
                     MyPrint("o robo foi " + (db.isRobotAberto() ? "aberto" : "fechado"));
                 }
             }
-        }); 
+        });
 
-        rdbtnOnOff.setBounds(36, 30, 109, 23);
-        contentPane.add(rdbtnOnOff);
 
 ///////////////////---------- textField -------------
 // Distancia
