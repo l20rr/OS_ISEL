@@ -1,7 +1,7 @@
 
 public class BaseDados {
 	private boolean terminar; 
-	private RobotLegoEV3Simula robot;
+	private Servidor robot;
 	private boolean robotAberto;
 	private int distancia; 
 	private int angulo; 
@@ -18,13 +18,13 @@ public class BaseDados {
 	}
 	
 	public BaseDados() {
-		robot = new RobotLegoEV3Simula();
+		robot = new Servidor();
 		terminar = false; 
 		nomeRobot = "EV7";
 		robotAberto = false;
 	}
 
-	public RobotLegoEV3Simula getRobot() {
+	public Servidor getRobot() {
 		return robot;
 	}
 /*
