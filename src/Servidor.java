@@ -5,6 +5,7 @@ public class Servidor extends Tarefa {
     private BufferCircular buffer;
     private BaseDados db;
 
+ 
     public Servidor(BufferCircular buffer, BaseDados db) {
         this.buffer = buffer;
         this.db = db;
@@ -33,3 +34,4 @@ public class Servidor extends Tarefa {
         }
     }
 }
+
