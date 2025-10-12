@@ -3,7 +3,7 @@ public class RobotLegoEV3Simula {
 
     private boolean isConnected;
     private String robotName;
-
+	private BufferCircular Buffer; 
     public RobotLegoEV3Simula() {
         this.isConnected = false;
         this.robotName = "SimulatedEV3";
@@ -71,4 +71,8 @@ public class RobotLegoEV3Simula {
     public String getRobotName() {
         return robotName;
     }
+
+	public BufferCircular getBuffer() {
+		return Buffer; 
+	}
 }

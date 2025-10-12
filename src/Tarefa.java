@@ -1,4 +1,14 @@
+public abstract class Tarefa extends Thread {
+    protected boolean ativa = true;
 
-public class Tarefa extends Thread{
-	
+    public void terminar() {
+        ativa = false;
+    }
+
+    public boolean isAtiva() {
+        return ativa;
+    }
+
+    @Override
+    public abstract void run();
 }

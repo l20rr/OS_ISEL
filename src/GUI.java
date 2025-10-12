@@ -270,6 +270,27 @@ public class GUI extends JFrame {
         rdbtnMovAlt.setBackground(Color.WHITE);
         rdbtnMovAlt.setBounds(529, 198, 135, 23);
         contentPane.add(rdbtnMovAlt);
+        rdbtnMovAlt.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (rdbtnMovAlt.isSelected()) {
+                    // Lê o número de movimentos do spinner
+                    int qtd = (int) spinner.getValue();
+                    MyPrint("Gerando " + qtd + " movimentos aleatórios...");
+
+                    try {
+                        // Cria e inicia a thread de movimentos aleatórios
+                        MovimentosAleatorios tarefa = new MovimentosAleatorios(
+                                db.getRobot().getBuffer(), qtd);
+                        tarefa.start();
+
+                        MyPrint("Tarefa de movimentos aleatórios iniciada!");
+                    } catch (Exception ex) {
+                        MyPrint("Erro ao iniciar movimentos aleatórios: " + ex.getMessage());
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
         
 
         // Listener para fechar corretamente

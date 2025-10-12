@@ -1,14 +1,13 @@
 
 public class BaseDados {
 	private boolean terminar; 
-	private Servidor robot;
+	private RobotLegoEV3Simula robot;
 	private boolean robotAberto;
 	private int distancia; 
 	private int angulo; 
 	private int raio; 
-	private int num_alt ; 
 	private String  nomeRobot;
-	
+	private BufferCircular Buffer; 
 	
 	public boolean isRobotAberto() {
 		return robotAberto;
@@ -19,13 +18,13 @@ public class BaseDados {
 	}
 	
 	public BaseDados() {
-		robot = new Servidor();
+		robot = new RobotLegoEV3Simula();
 		terminar = false; 
 		nomeRobot = "EV7";
 		robotAberto = false;
 	}
 
-	public Servidor getRobot() {
+	public RobotLegoEV3Simula getRobot() {
 		return robot;
 	}
 /*
@@ -72,14 +71,8 @@ public class BaseDados {
 	public void setNomeRobot(String nomeRobot) {
 		this.nomeRobot = nomeRobot;
 	}
+	
 
-	public int getNum_alt() {
-		return num_alt;
-	}
-
-	public void setNum_alt(int num_alt) {
-		this.num_alt = num_alt;
-	}
 	
 }
   
