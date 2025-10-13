@@ -1,15 +1,16 @@
-
 public class RobotLegoEV3Simula {
 
     private boolean isConnected;
     private String robotName;
-	private BufferCircular Buffer; 
+    private BufferCircular Buffer; 
+    
     public RobotLegoEV3Simula() {
         this.isConnected = false;
         this.robotName = "SimulatedEV3";
+        this.Buffer = new BufferCircular(); 
     }
 
-    // Simula a abertura da ligação ao EV3
+    
     public boolean OpenEV3(String name) {
         this.robotName = name;
         this.isConnected = true;
@@ -17,7 +18,7 @@ public class RobotLegoEV3Simula {
         return true;
     }
 
-    // Simula o fecho da ligação
+    // fechar 
     public void CloseEV3() {
         if (isConnected) {
             System.out.println("Simulação: Ligação com " + robotName + " terminada.");
@@ -27,7 +28,7 @@ public class RobotLegoEV3Simula {
         }
     }
 
-    // Simula movimento em linha reta
+    // reta
     public void Reta(int distancia) {
         if (isConnected) {
             System.out.println("Simulação: Movendo em linha reta por " + distancia + " unidades.");
@@ -36,7 +37,7 @@ public class RobotLegoEV3Simula {
         }
     }
 
-    // Simula movimento circular à esquerda
+    //esquerda
     public void CurvarEsquerda(int raio, int angulo) {
         if (isConnected) {
             System.out.println("Simulação: Curvando à esquerda com raio " + raio + " e ângulo " + angulo);
@@ -45,7 +46,7 @@ public class RobotLegoEV3Simula {
         }
     }
 
-    // Simula movimento circular à direita
+    //direita
     public void CurvarDireita(int raio, int angulo) {
         if (isConnected) {
             System.out.println("Simulação: Curvando à direita com raio " + raio + " e ângulo " + angulo);
@@ -54,7 +55,7 @@ public class RobotLegoEV3Simula {
         }
     }
 
-    // Simula parar o robô
+    // parar
     public void Parar(boolean immediateReturn) {
         if (isConnected) {
             System.out.println("Simulação: Robo parou. (ImmediateReturn = " + immediateReturn + ")");
@@ -63,7 +64,7 @@ public class RobotLegoEV3Simula {
         }
     }
 
-    // Getter para estado de conexão
+    
     public boolean isConnected() {
         return isConnected;
     }
@@ -72,7 +73,7 @@ public class RobotLegoEV3Simula {
         return robotName;
     }
 
-	public BufferCircular getBuffer() {
-		return Buffer; 
-	}
+    public BufferCircular getBuffer() {
+        return Buffer; 
+    }
 }
