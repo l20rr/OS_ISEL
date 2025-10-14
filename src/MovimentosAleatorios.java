@@ -6,6 +6,7 @@ public class MovimentosAleatorios extends Tarefa {
     private int quantidadeComandos; // Número de comandos a gerar
     private Random rand;
 
+
     // Constantes do robot
     private final double VELOCIDADE = 20.0; // cm/s
     private final int TEMPO_COMUNICACAO = 100; // ms

@@ -1,9 +1,19 @@
 public class Application {
     private GUI gui;
     private BaseDados db;
+    private BufferCircular buffer;
+    private Servidor servidor;
 
     public Application() {
+    
         db = new BaseDados();
+        buffer = new BufferCircular();
+        db.setBuffer(buffer); 
+        // Cria e inicia o consumidor
+        servidor = new Servidor(buffer, db);
+        servidor.start();
+
+        // Cria GUI
         gui = new GUI(this);
         gui.setVisible(true);
     }
@@ -13,7 +23,8 @@ public class Application {
     }
 
     public void run() {
-        System.out.print("A app começou!!");
+        System.out.println("A aplicação começou!!");
+
         while (!db.isTerminar()) {
             try {
                 Thread.sleep(100);
@@ -21,7 +32,10 @@ public class Application {
                 e.printStackTrace();
             }
         }
-        System.out.print("A aplicação terminou!");
+
+        // finalização
+        servidor.terminar();
+        System.out.println("A aplicação terminou!");
     }
 
     public static void main(String[] args) {

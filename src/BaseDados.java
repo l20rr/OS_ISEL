@@ -7,7 +7,7 @@ public class BaseDados {
 	private int angulo; 
 	private int raio; 
 	private String  nomeRobot;
-	private BufferCircular Buffer; 
+	private BufferCircular buffer; 
 	
 	public boolean isRobotAberto() {
 		return robotAberto;
@@ -71,7 +71,14 @@ public class BaseDados {
 	public void setNomeRobot(String nomeRobot) {
 		this.nomeRobot = nomeRobot;
 	}
-	
+
+	public BufferCircular getBuffer() {
+	    return buffer;
+	}
+
+	public void setBuffer(BufferCircular buffer) {
+	    this.buffer = buffer;
+	}
 
 	
 }

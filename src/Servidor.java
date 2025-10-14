@@ -21,11 +21,21 @@ public class Servidor extends Tarefa {
                     case "RETA":
                         db.getRobot().Reta(c.arg1);
                         break;
-                    case "CURVA":
+                    case "CURVA_DIREITA":
                         db.getRobot().CurvarDireita(c.arg1, c.arg2);
+                        break;
+                    case "CURVA_ESQUERDA":
+                        db.getRobot().CurvarEsquerda(c.arg1, c.arg2);
+                        break;
+                    case "PARAR":
+                        db.getRobot().Parar(false);
+                        break;
+                    default:
+                        System.out.println("Comando desconhecido: " + c.tipo);
                         break;
                 }
             }
+            
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {

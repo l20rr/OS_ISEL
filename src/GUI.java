@@ -242,7 +242,7 @@ public class GUI extends JFrame {
             textField_Raio.setText("0");
         }
 
-//////////////////////********************///////////////
+//////////////////////*********Movimentos aleatroiros***********///////////////
         JLabel label_Numero = new JLabel("Número:");
         label_Numero.setFont(new Font("Tahoma", Font.PLAIN, 13));
         label_Numero.setBounds(415, 195, 65, 25);
@@ -252,19 +252,6 @@ public class GUI extends JFrame {
         spinner.setFont(new Font("Tahoma", Font.PLAIN, 13));
         spinner.setBounds(467, 191, 56, 32);
         contentPane.add(spinner);
-
-////////////---------consola -------------
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(90, 246, 563, 95);
-        contentPane.add(scrollPane);
-
-        textArea_console = new JTextArea(); // inicialização aqui
-        scrollPane.setViewportView(textArea_console);
-
-        JLabel label_Consola = new JLabel("Consola:");
-        label_Consola.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        label_Consola.setBounds(90, 221, 82, 16);
-        contentPane.add(label_Consola);
 
         JRadioButton rdbtnMovAlt = new JRadioButton("Movimentos Aleatórios");
         rdbtnMovAlt.setBackground(Color.WHITE);
@@ -279,11 +266,11 @@ public class GUI extends JFrame {
 
                     try {
                         // Cria e inicia a thread de movimentos aleatórios
-                        MovimentosAleatorios tarefa = new MovimentosAleatorios(
-                                db.getRobot().getBuffer(), qtd);
+                    	MovimentosAleatorios tarefa = new MovimentosAleatorios(
+                    	        db.getBuffer(), qtd);
                         tarefa.start();
 
-                        MyPrint("Tarefa de movimentos aleatórios iniciada!");
+                        MyPrint("movimento aleatorio ok") ;
                     } catch (Exception ex) {
                         MyPrint("Erro ao iniciar movimentos aleatórios: " + ex.getMessage());
                         ex.printStackTrace();
@@ -292,7 +279,18 @@ public class GUI extends JFrame {
             }
         });
         
+////////////---------consola -------------
+    JScrollPane scrollPane = new JScrollPane();
+    scrollPane.setBounds(90, 246, 563, 95);
+    contentPane.add(scrollPane);
 
+    textArea_console = new JTextArea(); // inicialização aqui
+    scrollPane.setViewportView(textArea_console);
+
+    JLabel label_Consola = new JLabel("Consola:");
+    label_Consola.setFont(new Font("Tahoma", Font.PLAIN, 13));
+    label_Consola.setBounds(90, 221, 82, 16);
+    contentPane.add(label_Consola);
         // Listener para fechar corretamente
         addWindowListener(new WindowAdapter() {
             @Override
