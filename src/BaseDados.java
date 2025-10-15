@@ -1,86 +1,78 @@
-
 public class BaseDados {
-	private boolean terminar; 
-	private RobotLegoEV3Simula robot;
-	private boolean robotAberto;
-	private int distancia; 
-	private int angulo; 
-	private int raio; 
-	private String  nomeRobot;
-	private BufferCircular buffer; 
-	
-	public boolean isRobotAberto() {
-		return robotAberto;
-	}
-	
-	public void setRobotAberto(boolean robotAberto ) {
-		this.robotAberto = robotAberto; 
-	}
-	
-	public BaseDados() {
-		robot = new RobotLegoEV3Simula();
-		terminar = false; 
-		nomeRobot = "EV7";
-		robotAberto = false;
-	}
+    private boolean terminar; 
+    private boolean robotAberto;
+    private String nomeRobot;
 
-	public RobotLegoEV3Simula getRobot() {
-		return robot;
-	}
-/*
-	public void setRobot(RobotLegoEV3 robot) {
-		this.robot = robot;
-	}
-	*/
-	public boolean isTerminar() {
-		return terminar;
-	}
-	
-	public void setTerminar(boolean terminar) {
-		this.terminar = terminar ; 
-	}
+    private final BufferCircular buffer;
+    private final Servidor servidor; // Servidor único e final
 
-	public int getDistancia() {
-		return distancia;
-	}
+    // Apenas para exibição de status (opcional)
+    private int ultimaDistancia; 
+    private int ultimoAngulo; 
+    private int ultimoRaio; 
 
-	public void setDistancia(int distancia) {
-		this.distancia = distancia;
-	}
+    public BaseDados() {
+        this.terminar = false; 
+        this.nomeRobot = "EV7";
+        this.robotAberto = false;
+        this.buffer = new BufferCircular();
+        this.servidor = new Servidor(buffer, this);
+    }
 
-	public int getAngulo() {
-		return angulo;
-	}
+    public Servidor getServidor() {
+        return servidor;
+    }
 
-	public void setAngulo(int angulo) {
-		this.angulo = angulo;
-	}
+    public BufferCircular getBuffer() {
+        return buffer;
+    }
 
-	public int getRaio() {
-		return raio;
-	}
+    public boolean isRobotAberto() {
+        return robotAberto;
+    }
 
-	public void setRaio(int raio) {
-		this.raio = raio;
-	}
+    public void setRobotAberto(boolean robotAberto) {
+        this.robotAberto = robotAberto; 
+    }
 
-	public String getNomeRobot() {
-		return nomeRobot;
-	}
+    public boolean isTerminar() {
+        return terminar;
+    }
 
-	public void setNomeRobot(String nomeRobot) {
-		this.nomeRobot = nomeRobot;
-	}
+    public void setTerminar(boolean terminar) {
+        this.terminar = terminar;
+    }
 
-	public BufferCircular getBuffer() {
-	    return buffer;
-	}
+    public String getNomeRobot() {
+        return nomeRobot;
+    }
 
-	public void setBuffer(BufferCircular buffer) {
-	    this.buffer = buffer;
-	}
+    public void setNomeRobot(String nomeRobot) {
+        this.nomeRobot = nomeRobot;
+    }
 
-	
+   
+    public int getUltimaDistancia() {
+        return ultimaDistancia;
+    }
+
+    public void setUltimaDistancia(int ultimaDistancia) {
+        this.ultimaDistancia = ultimaDistancia;
+    }
+
+    public int getUltimoAngulo() {
+        return ultimoAngulo;
+    }
+
+    public void setUltimoAngulo(int ultimoAngulo) {
+        this.ultimoAngulo = ultimoAngulo;
+    }
+
+    public int getUltimoRaio() {
+        return ultimoRaio;
+    }
+
+    public void setUltimoRaio(int ultimoRaio) {
+        this.ultimoRaio = ultimoRaio;
+    }
 }
-  
-  

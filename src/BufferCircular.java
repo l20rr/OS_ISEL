@@ -1,47 +1,122 @@
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
+/**
+ * BufferCircular — comunicação thread-safe entre produtores (ex: GUI, MovimentosAleatorios)
+ * e o consumidor (Servidor). Usa semáforos para controle e timeouts para evitar bloqueio.
+ */
 public class BufferCircular {
-    private final int dimensaoBuffer = 8;
-    private Comando[] bufferCircular;
+
+    private final int dimensaoBuffer = 4;
+    private final Comando[] bufferCircular;
+
     private int putBuffer, getBuffer;
-    private Semaphore elementosLivres, elementosOcupados, acessoElemento;
+
+    private final Semaphore elementosLivres;
+    private final Semaphore elementosOcupados;
+    private final Semaphore acessoElemento;
 
     public BufferCircular() {
         bufferCircular = new Comando[dimensaoBuffer];
         putBuffer = 0;
         getBuffer = 0;
+
         elementosLivres = new Semaphore(dimensaoBuffer);
         elementosOcupados = new Semaphore(0);
         acessoElemento = new Semaphore(1);
     }
 
-    // INSERE comando no buffer
-    public void inserirElemento(Comando c) {
+
+    public boolean inserirElemento(Comando c) {
         try {
-            elementosLivres.acquire();     
-            acessoElemento.acquire();      // bloqueia acesso simultâneo
-            bufferCircular[putBuffer] = c; // insere o comando
-            putBuffer = (putBuffer + 1) % dimensaoBuffer; 
+            if (!elementosLivres.tryAcquire(500, TimeUnit.MILLISECONDS)) {
+                System.out.println("[Buffer] Cheio — comando descartado: " + c.getTipo());
+                return false; // não conseguiu inserir a tempo
+            }
+
+            acessoElemento.acquire();
+            bufferCircular[putBuffer] = c;
+            putBuffer = (putBuffer + 1) % dimensaoBuffer;
             acessoElemento.release();
-            elementosOcupados.release();   // sinaliza que há um comando a mais
+
+            elementosOcupados.release();
+            System.out.println("[Buffer] Inserido comando: " + c.getTipo());
+            return true;
+
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            return false;
         }
     }
 
-    // REMOVE comando do buffer
+ 
     public Comando removerElemento() {
-        Comando c = null;
         try {
-            elementosOcupados.acquire();   
-            acessoElemento.acquire();      // bloqueia acesso simultâneo
-            c = bufferCircular[getBuffer];
+            if (!elementosOcupados.tryAcquire(500, TimeUnit.MILLISECONDS)) {
+                // Timeout sem comando disponível
+                return null;
+            }
+
+            acessoElemento.acquire();
+            Comando c = bufferCircular[getBuffer];
+            bufferCircular[getBuffer] = null;
             getBuffer = (getBuffer + 1) % dimensaoBuffer;
             acessoElemento.release();
-            elementosLivres.release();     // libera espaço
+
+            elementosLivres.release();
+            return c;
+
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            return null;
         }
-        return c;
+    }
+
+    /**
+     * Limpa o buffer de maneira segura (sem recriar semáforos).
+     */
+    public void limpar() {
+        try {
+            acessoElemento.acquire();
+
+            for (int i = 0; i < dimensaoBuffer; i++) {
+                bufferCircular[i] = null;
+            }
+
+            putBuffer = 0;
+            getBuffer = 0;
+
+            // Reinicializa contadores sem destruir semáforos
+            elementosLivres.drainPermits();
+            elementosOcupados.drainPermits();
+
+            elementosLivres.release(dimensaoBuffer);
+
+            acessoElemento.release();
+            System.out.println("[Buffer] Limpo e reinicializado.");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Verifica se o buffer está vazio.
+     */
+    public boolean estaVazio() {
+        return elementosOcupados.availablePermits() == 0;
+    }
+
+    /**
+     * Verifica se o buffer está cheio.
+     */
+    public boolean estaCheio() {
+        return elementosLivres.availablePermits() == 0;
+    }
+
+    /**
+     * Retorna o tamanho atual (quantos comandos estão no buffer).
+     */
+    public int tamanhoAtual() {
+        return elementosOcupados.availablePermits();
     }
 }

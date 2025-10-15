@@ -1,19 +1,9 @@
 public class Application {
     private GUI gui;
     private BaseDados db;
-    private BufferCircular buffer;
-    private Servidor servidor;
 
     public Application() {
-    
-        db = new BaseDados();
-        buffer = new BufferCircular();
-        db.setBuffer(buffer); 
-        // Cria e inicia o consumidor
-        servidor = new Servidor(buffer, db);
-        servidor.start();
-
-        // Cria GUI
+        db = new BaseDados(); // BaseDados já cria o buffer e servidor
         gui = new GUI(this);
         gui.setVisible(true);
     }
@@ -33,8 +23,8 @@ public class Application {
             }
         }
 
-        // finalização
-        servidor.terminar();
+        // Finalização
+        db.getServidor().terminar();
         System.out.println("A aplicação terminou!");
     }
 
