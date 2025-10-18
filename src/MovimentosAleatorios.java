@@ -1,17 +1,17 @@
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
-/**
- * MovimentosAleatorios - gera comandos aleatórios e envia para o Servidor.
- */
 public class MovimentosAleatorios extends Tarefa {
-
     private final BaseDados db;
     private final int quantidadeComandos;
     private final Random rand;
 
-    // Constantes físicas para simulação (ajuste conforme avaliação)
-    private static final double VELOCIDADE_CM_S = 20.0;  // cm/s
-    private static final int TEMPO_COMUNICACAO_MS = 100;  // ms entre comandos
+    private Comando myComando;
+    private final Semaphore livreMyComando = new Semaphore(1);
+    private final Semaphore ocupadoMyComando = new Semaphore(0);
+
+    private static final double VELOCIDADE_CM_S = 20.0;
+    private static final int TEMPO_COMUNICACAO_MS = 100;
 
     public MovimentosAleatorios(BaseDados db, int quantidadeComandos) {
         this.db = db;
@@ -20,109 +20,69 @@ public class MovimentosAleatorios extends Tarefa {
         this.ativa = true;
     }
 
-    /** Pausa a geração de movimentos */
+    private void gerarComando() {
+        int tipo = rand.nextInt(3);
+        Comando c;
+        switch (tipo) {
+            case 0 -> c = new Comando("RETA", 10 + rand.nextInt(41), 0);
+            case 1 -> c = new Comando("CURVA_DIREITA", 10 + rand.nextInt(21), 20 + rand.nextInt(71));
+            default -> c = new Comando("CURVA_ESQUERDA", 10 + rand.nextInt(21), 20 + rand.nextInt(71));
+        }
+
+        try {
+            livreMyComando.acquire();
+            myComando = c;
+            System.out.println("[MovimentosAleatorios] Gerado comando: " + c);
+            ocupadoMyComando.release();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public Comando obterComando() {
+        Comando c = null;
+        try {
+            if (!ocupadoMyComando.tryAcquire()) return null; // não bloqueia
+            c = myComando;
+            livreMyComando.release();
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }
+        return c;
+    }
+
+    /** Para a thread de forma segura */
     public void pararMovimentos() {
-        ativa = false;
-        System.out.println("[MovimentosAleatorios] Movimentos aleatórios pausados.");
+        this.ativa = false;
+
+        // libera semáforos para não travar em acquires
+        livreMyComando.release();
+        ocupadoMyComando.release();
+
+        System.out.println("[MovimentosAleatorios] Movimentos aleatórios parados.");
     }
 
     @Override
     public void run() {
-        System.out.println("[MovimentosAleatorios] Thread iniciada com " + quantidadeComandos + " comandos por ciclo.");
+        System.out.println("[MovimentosAleatorios] Thread iniciada.");
 
         while (isAtiva()) {
-            // Verifica se servidor existe e está ativo
             if (db.getServidor() == null || !db.getServidor().isAtiva()) {
-                System.out.println("[MovimentosAleatorios] Servidor inativo, aguardando...");
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    break;
-                }
+                try { Thread.sleep(500); } catch (InterruptedException e) { break; }
                 continue;
             }
 
-            int totalTempoMs = 0;
-
             for (int i = 0; i < quantidadeComandos && isAtiva(); i++) {
-                int tempoComando = gerarComandoAleatorio();
-                totalTempoMs += tempoComando;
+                gerarComando();
+                Comando c = obterComando();
+                if (c != null) db.getServidor().buffer.inserirElemento(c);
 
-                // Intervalo curto entre comandos para evitar sobrecarga no buffer
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    return;
-                }
+                try { Thread.sleep(50); } catch (InterruptedException e) { return; }
             }
 
-            
-            try {
-                Thread.sleep(Math.max(200, totalTempoMs));
-            } catch (InterruptedException e) {
-                break;
-            }
-
-            
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                break;
-            }
+            try { Thread.sleep(500); } catch (InterruptedException e) { break; }
         }
 
         System.out.println("[MovimentosAleatorios] Thread finalizada.");
-    }
-
-  
-    private int gerarComandoAleatorio() {
-        int tipo = rand.nextInt(3); // 0 = RETA, 1 = CURVA DIREITA, 2 = CURVA ESQUERDA
-        int tempoEstimado = 0;
-
-        if (db.getServidor() == null) return 0;
-
-        switch (tipo) {
-            case 0: { // RETA
-                int distancia = 10 + rand.nextInt(41); // 10 a 50 cm
-                tempoEstimado = calculaTempoReta(distancia);
-                System.out.printf("[MovimentosAleatorios] Reta: %d cm (%.1f s)%n",
-                        distancia, tempoEstimado / 1000.0);
-                db.getServidor().Reta(distancia);
-                break;
-            }
-            case 1: { // CURVA DIREITA
-                int raio = 10 + rand.nextInt(21);   // 10 a 30 cm
-                int angulo = 20 + rand.nextInt(71); // 20 a 90 graus
-                tempoEstimado = calculaTempoCurva(raio, angulo);
-                System.out.printf("[MovimentosAleatorios] Curva Direita: raio=%d cm, angulo=%d° (%.1f s)%n",
-                        raio, angulo, tempoEstimado / 1000.0);
-                db.getServidor().CurvarDireita(raio, angulo);
-                break;
-            }
-            case 2: { // CURVA ESQUERDA
-                int raio = 10 + rand.nextInt(21);
-                int angulo = 20 + rand.nextInt(71);
-                tempoEstimado = calculaTempoCurva(raio, angulo);
-                System.out.printf("[MovimentosAleatorios] Curva Esquerda: raio=%d cm, angulo=%d° (%.1f s)%n",
-                        raio, angulo, tempoEstimado / 1000.0);
-                db.getServidor().CurvarEsquerda(raio, angulo);
-                break;
-            }
-        }
-
-        return tempoEstimado;
-    }
-
-    /* -------------------- Cálculos de tempo -------------------- */
-
-    private int calculaTempoReta(int distanciaCm) {
-        double tempoSeg = distanciaCm / VELOCIDADE_CM_S;
-        return (int) (tempoSeg * 1000) + TEMPO_COMUNICACAO_MS;
-    }
-
-    private int calculaTempoCurva(int raioCm, int anguloGraus) {
-        double comprimentoArco = (anguloGraus / 360.0) * 2.0 * Math.PI * raioCm;
-        double tempoSeg = comprimentoArco / VELOCIDADE_CM_S;
-        return (int) (tempoSeg * 1000) + TEMPO_COMUNICACAO_MS;
     }
 }

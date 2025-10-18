@@ -8,11 +8,7 @@ public class RobotLegoEV3Simula {
         this.robotName = "SimulatedEV3";
     }
 
-    /**
-     * Simula abertura da ligação ao EV3
-     * @param nome nome do robô
-     * @return true se conectado com sucesso
-     */
+ 
     public boolean OpenEV3(String nome) {
         this.robotName = nome != null ? nome : "SimulatedEV3";
         this.isConnected = true; // Corrige o problema

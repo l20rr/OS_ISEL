@@ -64,19 +64,18 @@ public class GUI extends JFrame {
         btnParar.setBackground(Color.RED);
         btnParar.setBounds(237, 140, 99, 32);
         btnParar.addActionListener(e -> {
-            // 1️⃣ Para o servidor e limpa o buffer
-            db.getServidor().Parar(true); 
-
-            // 2️⃣ Para os movimentos aleatórios se estiverem ativos
+            // 1️⃣ Para os movimentos aleatórios
             if (movimentoAleatorioAtivo != null) {
-                movimentoAleatorioAtivo.pararMovimentos(); // método que deve parar a thread
+                movimentoAleatorioAtivo.pararMovimentos();
                 movimentoAleatorioAtivo = null;
                 MyPrint("Movimentos aleatórios parados.");
             }
 
-            // 3️⃣ Reativa o servidor para aceitar novos comandos
-            db.getServidor().setAtiva(true);
+            // 2️⃣ Para o servidor e limpa o buffer
+            db.getServidor().Parar(true);
 
+            // 3️⃣ Reativa o servidor
+            db.getServidor().setAtiva(true);
             MyPrint("Robot parou e servidor reativado.");
         });
 
@@ -198,7 +197,7 @@ public class GUI extends JFrame {
                     movimentoAleatorioAtivo.pararMovimentos();
                     movimentoAleatorioAtivo = null;
                 }
-                db.getServidor().setAtiva(true);
+                db.getServidor().setAtiva(false);
                 MyPrint("Movimentos aleatórios parados.");
                 return;
             }
