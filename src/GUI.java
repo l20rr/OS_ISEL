@@ -192,15 +192,16 @@ public class GUI extends JFrame {
         contentPane.add(rdbtnMovAlt);
 
         rdbtnMovAlt.addActionListener(e -> {
-            if (!rdbtnMovAlt.isSelected()) {
-                if (movimentoAleatorioAtivo != null) {
-                    movimentoAleatorioAtivo.pararMovimentos();
-                    movimentoAleatorioAtivo = null;
-                }
-                db.getServidor().setAtiva(false);
-                MyPrint("Movimentos aleatórios parados.");
-                return;
-            }
+        	if (!rdbtnMovAlt.isSelected()) {
+        	    if (movimentoAleatorioAtivo != null) {
+        	        movimentoAleatorioAtivo.pararMovimentos();
+        	        movimentoAleatorioAtivo = null;
+        	    }
+        	    
+        	    db.getServidor().buffer.inserirElemento(new Comando("PARAR", 0, 0));
+        	    MyPrint("Movimentos aleatórios parados.");
+        	    return;
+        	}
             int qtd = (int) spinner.getValue();
             MyPrint("Gerando " + qtd + " movimentos aleatórios...");
             movimentoAleatorioAtivo = new MovimentosAleatorios(db, qtd, this);
