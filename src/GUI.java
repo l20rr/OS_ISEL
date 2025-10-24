@@ -25,7 +25,7 @@ public class GUI extends JFrame {
     private BaseDados db;   
     private MovimentosAleatorios movimentoAleatorioAtivo = null;
 
-    private void MyPrint(String msg) {
+    public void MyPrint(String msg) {
         SwingUtilities.invokeLater(() -> textArea_console.append(msg + "\n"));
     }
 
@@ -203,7 +203,7 @@ public class GUI extends JFrame {
             }
             int qtd = (int) spinner.getValue();
             MyPrint("Gerando " + qtd + " movimentos aleatórios...");
-            movimentoAleatorioAtivo = new MovimentosAleatorios(db, qtd);
+            movimentoAleatorioAtivo = new MovimentosAleatorios(db, qtd, this);
             movimentoAleatorioAtivo.start();
         });
 

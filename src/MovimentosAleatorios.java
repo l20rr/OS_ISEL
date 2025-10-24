@@ -5,6 +5,7 @@ public class MovimentosAleatorios extends Tarefa {
     private final BaseDados db;
     private final int quantidadeComandos;
     private final Random rand;
+    private final GUI gui;
 
     private Comando myComando;
     private final Semaphore livreMyComando = new Semaphore(1);
@@ -13,11 +14,23 @@ public class MovimentosAleatorios extends Tarefa {
     private static final double VELOCIDADE_CM_S = 20.0;
     private static final int TEMPO_COMUNICACAO_MS = 100;
 
-    public MovimentosAleatorios(BaseDados db, int quantidadeComandos) {
+    public MovimentosAleatorios(BaseDados db, int quantidadeComandos, GUI gui) {
         this.db = db;
-        this.quantidadeComandos = quantidadeComandos;
+        this.gui = gui;
+        this.quantidadeComandos = Math.max(1, quantidadeComandos);
         this.rand = new Random();
         this.ativa = true;
+    }
+    
+    public static String formatLinha(int index, Comando c) {
+        String nome;
+        switch (c.getTipo()) {
+            case "RETA" -> nome = "Reta";
+            case "CURVA_DIREITA" -> nome = "Curva_Direita";
+            case "CURVA_ESQUERDA" -> nome = "Curva_Esquerda";
+            default -> nome = c.getTipo();
+        }
+        return index + " - " + nome + " (" + c.getArg1() + "," + c.getArg2() + ")";
     }
 
     private void gerarComando() {
@@ -76,9 +89,16 @@ public class MovimentosAleatorios extends Tarefa {
                 gerarComando();
                 Comando c = obterComando();
                 if (c != null) db.getServidor().buffer.inserirElemento(c);
+                if (c != null && gui != null) {
+                    gui.MyPrint(formatLinha(i + 1, c));
+                }
 
                 try { Thread.sleep(50); } catch (InterruptedException e) { return; }
             }
+            
+            Comando parar  = new Comando("PARAR",0,0);
+            db.getServidor().buffer.inserirElemento(parar);
+            if(gui != null) gui.MyPrint("Parar(false)");
 
             try { Thread.sleep(500); } catch (InterruptedException e) { break; }
         }
