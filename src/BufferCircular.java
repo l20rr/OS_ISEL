@@ -54,17 +54,7 @@ public class BufferCircular {
     }
 
     public void limpar() {
-        try {
-            acessoElemento.acquire();
-            for (int i = 0; i < dimensaoBuffer; i++) bufferCircular[i] = null;
-            putBuffer = 0;
-            getBuffer = 0;
-            elementosLivres.drainPermits();
-            elementosOcupados.drainPermits();
-            elementosLivres.release(dimensaoBuffer);
-            acessoElemento.release();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+    	new BufferCircular();
+    
     }
 }

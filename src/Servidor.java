@@ -15,28 +15,34 @@ public class Servidor extends Tarefa {
         this.robot = new RobotLegoEV3Simula();
     }
 
-    public void Reta(int distancia) { buffer.inserirElemento(new Comando("RETA", distancia, 0)); }
-    public void CurvarDireita(int raio, int angulo) { buffer.inserirElemento(new Comando("CURVA_DIREITA", raio, angulo)); }
-    public void CurvarEsquerda(int raio, int angulo) { buffer.inserirElemento(new Comando("CURVA_ESQUERDA", raio, angulo)); }
+    public void Reta(int distancia) {
+    	buffer.inserirElemento(new Comando("RETA", distancia, 0)); 
+    	}
+    public void CurvarDireita(int raio, int angulo) { 
+    	buffer.inserirElemento(new Comando("CURVA_DIREITA", raio, angulo));
+    	}
+    public void CurvarEsquerda(int raio, int angulo) {
+    	buffer.inserirElemento(new Comando("CURVA_ESQUERDA", raio, angulo));
+    	}
 
     public void Parar(boolean forcar) {
         if (forcar) {
             new Thread(() -> {
                 try {
-                    System.out.println("[Servidor] Iniciando paragem forçada...");
+                  
                     setAtiva(false); // pausa o loop principal
 
                     // executa todos os comandos pendentes
                     while (!buffer.estaVazio()) {
                         Comando c = buffer.removerElemento(); // já bloqueia corretamente com semáforos
                         if (c != null) {
-                            System.out.println("[Servidor|ParagemForcada] Executando: " + c);
+                           
                             executarComandoNoRobot(c);
                         }
                     }
 
                     buffer.limpar(); // limpa buffer sem quebrar semáforos
-                    System.out.println("[Servidor] PARAGEM FORÇADA concluída.");
+                
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -72,10 +78,12 @@ public class Servidor extends Tarefa {
     public void run() {
         while (true) {
             try {
-                if (!ativa) { Thread.sleep(100); continue; }
+                if (!ativa) { 
+                	Thread.sleep(100); continue; 
+                	}
                 Comando c = buffer.removerElemento();
                 if (c != null) executarComandoNoRobot(c);
-                Thread.sleep(50);
+               
             } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         }
     }
@@ -83,10 +91,15 @@ public class Servidor extends Tarefa {
     private void executarComandoNoRobot(Comando c) {
         if (c == null) return;
         switch (c.getTipo()) {
-            case "RETA" -> robot.Reta(c.getArg1());
-            case "CURVA_DIREITA" -> robot.CurvarDireita(c.getArg1(), c.getArg2());
-            case "CURVA_ESQUERDA" -> robot.CurvarEsquerda(c.getArg1(), c.getArg2());
-            case "PARAR" -> robot.Parar(false);
+            case "RETA": 
+            	robot.Reta(c.getArg1());
+            
+            case "CURVA_DIREITA" : 
+            	robot.CurvarDireita(c.getArg1(), c.getArg2());
+            case "CURVA_ESQUERDA": 
+            	robot.CurvarEsquerda(c.getArg1(), c.getArg2());
+            case "PARAR": 
+            	robot.Parar(false);
         }
     }
 

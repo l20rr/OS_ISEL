@@ -11,8 +11,7 @@ public class MovimentosAleatorios extends Tarefa {
     private final Semaphore livreMyComando = new Semaphore(1);
     private final Semaphore ocupadoMyComando = new Semaphore(0);
 
-    private static final double VELOCIDADE_CM_S = 20.0;
-    private static final int TEMPO_COMUNICACAO_MS = 100;
+  
 
     public MovimentosAleatorios(BaseDados db, int quantidadeComandos, GUI gui) {
         this.db = db;
@@ -35,11 +34,24 @@ public class MovimentosAleatorios extends Tarefa {
 
     private void gerarComando() {
         int tipo = rand.nextInt(3);
-        Comando c;
+        Comando c = null ;
         switch (tipo) {
-            case 0 -> c = new Comando("RETA", 10 + rand.nextInt(41), 0);
-            case 1 -> c = new Comando("CURVA_DIREITA", 10 + rand.nextInt(21), 20 + rand.nextInt(71));
-            default -> c = new Comando("CURVA_ESQUERDA", 10 + rand.nextInt(21), 20 + rand.nextInt(71));
+	        case 0: 
+	        	int distancia =10 + rand.nextInt(41); 
+	        	c = new Comando("RETA", distancia, 0);
+	        	sleepTempo(CalcularTempos.tempoReta(distancia));
+	        	break;
+	        case 1: 
+	        	int raio_D = 10 + rand.nextInt(21);
+	        	int angulo_D = 20 + rand.nextInt(71);
+	        	c = new Comando("CURVA_DIREITA", raio_D,angulo_D);
+	        	break;
+	        case 2: 
+	        	int raio_E = 10 + rand.nextInt(21);
+	        	int angulo_E = 20 + rand.nextInt(71);
+	        	c = new Comando("CURVA_ESQUERDA", raio_E,angulo_E);
+	        	break;
+        
         }
 
         try {
@@ -50,6 +62,14 @@ public class MovimentosAleatorios extends Tarefa {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+        
+    }
+    private void sleepTempo(int ms) {
+    	try {
+    		Thread.sleep(ms);
+    	}catch(InterruptedException e) {
+    		e.printStackTrace();
+    	}
     }
 
     public Comando obterComando() {
@@ -72,9 +92,10 @@ public class MovimentosAleatorios extends Tarefa {
         livreMyComando.release();
         ocupadoMyComando.release();
 
-        System.out.println("[MovimentosAleatorios] Movimentos aleatórios parados.");
     }
 
+    
+    //?????????
     @Override
     public void run() {
         System.out.println("[MovimentosAleatorios] Thread iniciada.");
@@ -100,9 +121,9 @@ public class MovimentosAleatorios extends Tarefa {
             db.getServidor().buffer.inserirElemento(parar);
             if(gui != null) gui.MyPrint("Parar(false)");
 
-            try { Thread.sleep(500); } catch (InterruptedException e) { break; }
+            try { Thread.sleep(50); } catch (InterruptedException e) { break; }
         }
 
-        System.out.println("[MovimentosAleatorios] Thread finalizada.");
+      
     }
 }

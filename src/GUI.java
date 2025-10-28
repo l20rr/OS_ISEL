@@ -71,10 +71,10 @@ public class GUI extends JFrame {
                 MyPrint("Movimentos aleatórios parados.");
             }
 
-            // 2️⃣ Para o servidor e limpa o buffer
+         
             db.getServidor().Parar(true);
 
-            // 3️⃣ Reativa o servidor
+            
             db.getServidor().setAtiva(true);
             MyPrint("Robot parou e servidor reativado.");
         });
