@@ -1,4 +1,12 @@
-/* ===================== Servidor ===================== */
+/*****Thread consumidor
+ * 
+ * Executa comandos do buffer e simula o tempo real de movimento
+ * 
+ * 
+ * 
+ * 
+ * *****/
+
 import java.util.Objects;
 
 public class Servidor extends Tarefa {
@@ -16,54 +24,42 @@ public class Servidor extends Tarefa {
     }
 
     public void Reta(int distancia) {
-    	buffer.inserirElemento(new Comando("RETA", distancia, 0)); 
-    	}
-    public void CurvarDireita(int raio, int angulo) { 
-    	buffer.inserirElemento(new Comando("CURVA_DIREITA", raio, angulo));
-    	}
+        buffer.inserirElemento(new Comando("RETA", distancia, 0));
+    }
+
+    public void CurvarDireita(int raio, int angulo) {
+        buffer.inserirElemento(new Comando("CURVA_DIREITA", raio, angulo));
+    }
+
     public void CurvarEsquerda(int raio, int angulo) {
-    	buffer.inserirElemento(new Comando("CURVA_ESQUERDA", raio, angulo));
-    	}
+        buffer.inserirElemento(new Comando("CURVA_ESQUERDA", raio, angulo));
+    }
 
     public void Parar(boolean forcar) {
         if (forcar) {
-            new Thread(() -> {
-                try {
-                  
-                    setAtiva(false); // pausa o loop principal
-
-                    // executa todos os comandos pendentes
-                    while (!buffer.estaVazio()) {
-                        Comando c = buffer.removerElemento(); // já bloqueia corretamente com semáforos
-                        if (c != null) {
-                           
-                            executarComandoNoRobot(c);
-                        }
-                    }
-
-                    buffer.limpar(); // limpa buffer sem quebrar semáforos
-                
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
+            ativa = false;
+            buffer.limpar();
+            robot.Parar(true);
         } else {
             buffer.inserirElemento(new Comando("PARAR", 0, 0));
         }
     }
 
-    public void setAtiva(boolean ativa) {
-        this.ativa = ativa;
-    }
+    public boolean isAtiva() { return ativa; }
+    public void setAtiva(boolean ativa) { this.ativa = ativa; }
 
     public synchronized boolean OpenEV3(String nomeRobot) {
         boolean ok = robot.OpenEV3(nomeRobot);
         if (ok) {
             db.setRobotAberto(true);
-            if (!started) { this.start(); started = true; }
+            if (!started) {
+                this.start(); //thread iniciada 
+                started = true;
+            }
             ativa = true;
-        } else db.setRobotAberto(false);
+        } else {
+            db.setRobotAberto(false);
+        }
         return ok;
     }
 
@@ -78,30 +74,56 @@ public class Servidor extends Tarefa {
     public void run() {
         while (true) {
             try {
-                if (!ativa) { 
-                	Thread.sleep(100); continue; 
-                	}
+                if (!ativa) {
+                    Thread.sleep(100); //pausa quando está desativado
+                    continue;
+                }
+
                 Comando c = buffer.removerElemento();
                 if (c != null) executarComandoNoRobot(c);
-               
-            } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
     }
 
     private void executarComandoNoRobot(Comando c) {
         if (c == null) return;
+
         switch (c.getTipo()) {
-            case "RETA": 
-            	robot.Reta(c.getArg1());
-            
-            case "CURVA_DIREITA" : 
-            	robot.CurvarDireita(c.getArg1(), c.getArg2());
-            case "CURVA_ESQUERDA": 
-            	robot.CurvarEsquerda(c.getArg1(), c.getArg2());
-            case "PARAR": 
-            	robot.Parar(false);
+            case "RETA":
+                robot.Reta(c.getArg1());
+                sleepTempo(CalcularTempos.tempoReta(c.getArg1())); //Pausa do enunciado e criada uma nova classe
+                break;
+
+            case "CURVA_DIREITA":
+                robot.CurvarDireita(c.getArg1(), c.getArg2());
+                sleepTempo(CalcularTempos.tempoCurva(c.getArg1(), c.getArg2()));
+                break;
+
+            case "CURVA_ESQUERDA":
+                robot.CurvarEsquerda(c.getArg1(), c.getArg2());
+                sleepTempo(CalcularTempos.tempoCurva(c.getArg1(), c.getArg2()));
+                break;
+
+            case "PARAR":
+                robot.Parar(false);
+                sleepTempo(CalcularTempos.tempoParar());
+                break;
+
+            default:
+                System.out.println("[Servidor] Comando desconhecido: " + c.getTipo());
+                break;
         }
     }
 
-  
+    private void sleepTempo(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }

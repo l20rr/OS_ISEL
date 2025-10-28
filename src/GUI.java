@@ -70,17 +70,12 @@ public class GUI extends JFrame {
                 movimentoAleatorioAtivo = null;
                 MyPrint("Movimentos aleatórios parados.");
             }
-
-         
-            db.getServidor().Parar(true);
-
-            
+            db.getServidor().Parar(true); 
             db.getServidor().setAtiva(true);
             MyPrint("Robot parou e servidor reativado.");
         });
 
         contentPane.add(btnParar);
-
         JButton btnDir = new JButton("DIREITA");
         btnDir.setBackground(Color.BLUE);
         btnDir.setBounds(335, 140, 99, 32);
