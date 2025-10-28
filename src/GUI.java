@@ -47,6 +47,7 @@ public class GUI extends JFrame {
         btnFrente.setBounds(237, 108, 99, 32);
         btnFrente.addActionListener(e -> {
             db.getServidor().Reta(db.getUltimaDistancia());
+            db.getServidor().Parar(false);
             MyPrint("fiz uma reta com " + db.getUltimaDistancia());
         });
         contentPane.add(btnFrente);
@@ -56,6 +57,7 @@ public class GUI extends JFrame {
         btnTras.setBounds(237, 171, 99, 32);
         btnTras.addActionListener(e -> {
             db.getServidor().Reta(-db.getUltimaDistancia());
+            db.getServidor().Parar(false);
             MyPrint("fiz uma marcha trás com " + db.getUltimaDistancia());
         });
         contentPane.add(btnTras);
@@ -81,6 +83,7 @@ public class GUI extends JFrame {
         btnDir.setBounds(335, 140, 99, 32);
         btnDir.addActionListener(e -> {
             db.getServidor().CurvarDireita(db.getUltimoRaio(), db.getUltimoAngulo());
+            db.getServidor().Parar(false);
             MyPrint("robot fez uma curva direita com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
         });
         contentPane.add(btnDir);
@@ -90,6 +93,7 @@ public class GUI extends JFrame {
         btnEsq.setBounds(139, 140, 99, 32);
         btnEsq.addActionListener(e -> {
             db.getServidor().CurvarEsquerda(db.getUltimoRaio(), db.getUltimoAngulo());
+            db.getServidor().Parar(false);
             MyPrint("robot fez uma curva esquerda com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
         });
         contentPane.add(btnEsq);

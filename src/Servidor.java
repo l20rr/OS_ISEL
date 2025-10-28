@@ -12,7 +12,7 @@ import java.util.Objects;
 public class Servidor extends Tarefa {
     public final BufferCircular buffer;
     private final BaseDados db;
-    private final RobotLegoEV3Simula robot;
+    private final RobotLegoEV3 robot;
 
     private volatile boolean ativa = false;
     private volatile boolean started = false;
@@ -20,7 +20,7 @@ public class Servidor extends Tarefa {
     public Servidor(BufferCircular buffer, BaseDados db) {
         this.buffer = Objects.requireNonNull(buffer);
         this.db = Objects.requireNonNull(db);
-        this.robot = new RobotLegoEV3Simula();
+        this.robot = new RobotLegoEV3();
     }
 
     public void Reta(int distancia) {
