@@ -24,7 +24,7 @@ public class Application {
         }
 
         // Finalização
-        db.getServidor().terminar();
+        db.getServidor().interrupt();
         System.out.println("A aplicação terminou!");
     }
 

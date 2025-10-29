@@ -46,8 +46,15 @@ public class GUI extends JFrame {
         btnFrente.setBackground(Color.GREEN);
         btnFrente.setBounds(237, 108, 99, 32);
         btnFrente.addActionListener(e -> {
-            db.getServidor().Reta(db.getUltimaDistancia());
-            db.getServidor().Parar(false);
+        	try {
+        	    db.getServidor().s.acquire();
+        	    db.getServidor().Reta(db.getUltimaDistancia());
+        	    db.getServidor().Parar(false);
+        	} catch (InterruptedException e1) {
+        	    Thread.currentThread().interrupt();
+        	} finally {
+        	    db.getServidor().s.release();
+        	}
             MyPrint("fiz uma reta com " + db.getUltimaDistancia());
         });
         contentPane.add(btnFrente);
@@ -56,8 +63,15 @@ public class GUI extends JFrame {
         btnTras.setBackground(new Color(255, 128, 64));
         btnTras.setBounds(237, 171, 99, 32);
         btnTras.addActionListener(e -> {
-            db.getServidor().Reta(-db.getUltimaDistancia());
-            db.getServidor().Parar(false);
+        	try {
+        	    db.getServidor().s.acquire();
+        	    db.getServidor().Reta(- db.getUltimaDistancia());
+        	    db.getServidor().Parar(false);
+        	} catch (InterruptedException e1) {
+        	    Thread.currentThread().interrupt();
+        	} finally {
+        	    db.getServidor().s.release();
+        	}
             MyPrint("fiz uma marcha trás com " + db.getUltimaDistancia());
         });
         contentPane.add(btnTras);
@@ -66,15 +80,14 @@ public class GUI extends JFrame {
         btnParar.setBackground(Color.RED);
         btnParar.setBounds(237, 140, 99, 32);
         btnParar.addActionListener(e -> {
-            // 1️⃣ Para os movimentos aleatórios
             if (movimentoAleatorioAtivo != null) {
-                movimentoAleatorioAtivo.pararMovimentos();
+                movimentoAleatorioAtivo.bloquear();
                 movimentoAleatorioAtivo = null;
-                MyPrint("Movimentos aleatórios parados.");
+                MyPrint("Movimentos aleatórios bloqueados.");
             }
-            db.getServidor().Parar(true); 
-            db.getServidor().setAtiva(true);
-            MyPrint("Robot parou e servidor reativado.");
+
+            db.getServidor().Parar(true); // agora é seguro
+            MyPrint("Robô parado (forçado), buffer limpo, servidor continua ativo.");
         });
 
         contentPane.add(btnParar);
@@ -82,8 +95,15 @@ public class GUI extends JFrame {
         btnDir.setBackground(Color.BLUE);
         btnDir.setBounds(335, 140, 99, 32);
         btnDir.addActionListener(e -> {
-            db.getServidor().CurvarDireita(db.getUltimoRaio(), db.getUltimoAngulo());
-            db.getServidor().Parar(false);
+        	try {
+        	    db.getServidor().s.acquire();
+        	    db.getServidor().CurvarDireita(db.getUltimoRaio(), db.getUltimoAngulo());
+        	    db.getServidor().Parar(false);
+        	} catch (InterruptedException e1) {
+        	    Thread.currentThread().interrupt();
+        	} finally {
+        	    db.getServidor().s.release();
+        	}
             MyPrint("robot fez uma curva direita com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
         });
         contentPane.add(btnDir);
@@ -92,8 +112,15 @@ public class GUI extends JFrame {
         btnEsq.setBackground(new Color(255, 128, 192));
         btnEsq.setBounds(139, 140, 99, 32);
         btnEsq.addActionListener(e -> {
-            db.getServidor().CurvarEsquerda(db.getUltimoRaio(), db.getUltimoAngulo());
-            db.getServidor().Parar(false);
+        	try {
+        	    db.getServidor().s.acquire();
+        	    db.getServidor().CurvarEsquerda(db.getUltimoRaio(), db.getUltimoAngulo());
+        	    db.getServidor().Parar(false);
+        	} catch (InterruptedException e1) {
+        	    Thread.currentThread().interrupt();
+        	} finally {
+        	    db.getServidor().s.release();
+        	}
             MyPrint("robot fez uma curva esquerda com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
         });
         contentPane.add(btnEsq);
@@ -108,14 +135,21 @@ public class GUI extends JFrame {
                 db.getServidor().CloseEV3();
                 db.setRobotAberto(false);
                 textField_Robot.setText("");
+                MyPrint("Servidor bloqueado e conexão encerrada.");
             } else {
                 boolean aberto = db.getServidor().OpenEV3(db.getNomeRobot());
                 db.setRobotAberto(aberto);
-                textField_Robot.setText(aberto ? db.getNomeRobot() : "");
+                if (aberto) {
+                    db.getServidor().desbloquear(); // ✅ apenas desbloqueia, sem start
+                    textField_Robot.setText(db.getNomeRobot());
+                    MyPrint("Servidor desbloqueado e ativo.");
+                } else {
+                    MyPrint("Falha ao abrir conexão com o robô.");
+                }
             }
             checkLigar.setSelected(db.isRobotAberto());
-            MyPrint("o robo foi " + (db.isRobotAberto() ? "aberto" : "fechado"));
         });
+
         contentPane.add(checkLigar);
 
         // ------------------- CAMPOS ----------------------
@@ -193,20 +227,23 @@ public class GUI extends JFrame {
         rdbtnMovAlt.addActionListener(e -> {
         	if (!rdbtnMovAlt.isSelected()) {
         	    if (movimentoAleatorioAtivo != null) {
-        	        movimentoAleatorioAtivo.pararMovimentos();
+        	        movimentoAleatorioAtivo.bloquear(); 
         	        movimentoAleatorioAtivo = null;
+        	        MyPrint("Movimentos aleatórios bloqueados.");
         	    }
-        	    
-        	    db.getServidor().buffer.inserirElemento(new Comando("PARAR", 0, 0));
-        	    MyPrint("Movimentos aleatórios parados.");
+
+        	    db.getServidor().Parar(true); // para completamente e limpa buffer
+        	    MyPrint("Parada forçada após desativar movimentos aleatórios.");
         	    return;
         	}
-            int qtd = (int) spinner.getValue();
-            MyPrint("Gerando " + qtd + " movimentos aleatórios...");
-            movimentoAleatorioAtivo = new MovimentosAleatorios(db, qtd, this);
-            movimentoAleatorioAtivo.start();
-        });
 
+
+            int qtd = (int) spinner.getValue();
+            movimentoAleatorioAtivo = new MovimentosAleatorios(db, qtd, this);
+            movimentoAleatorioAtivo.start();       // inicia uma única vez
+            movimentoAleatorioAtivo.desbloquear(); // começa o loop de runing()
+            MyPrint("Gerando " + qtd + " movimentos aleatórios...");
+        });
         // ------------------- CONSOLE ----------------------
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(90, 246, 563, 95);
@@ -227,9 +264,7 @@ public class GUI extends JFrame {
                 if (db.isRobotAberto()) {
                     db.getServidor().CloseEV3();
                 }
-                if (movimentoAleatorioAtivo != null) {
-                    movimentoAleatorioAtivo.pararMovimentos();
-                }
+               
                 db.setTerminar(true);
             }
         });
