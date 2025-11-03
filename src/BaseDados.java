@@ -6,7 +6,7 @@ public class BaseDados {
     private final BufferCircular buffer;
     private final Servidor servidor; // Servidor único e final
 
-    // Apenas para exibição de status (opcional)
+    
     private int ultimaDistancia; 
     private int ultimoAngulo; 
     private int ultimoRaio; 

@@ -20,6 +20,11 @@ public class Servidor extends Tarefa {
         this.start();
     }
 
+
+    private final double vel = 0.02;
+    private final int comunicacao = 100;
+    
+    
     public void Reta(int distancia) { buffer.inserirElemento(new Comando("RETA", distancia, 0)); }
     public void CurvarDireita(int raio, int angulo) { buffer.inserirElemento(new Comando("CURVA_DIREITA", raio, angulo)); }
     public void CurvarEsquerda(int raio, int angulo) { buffer.inserirElemento(new Comando("CURVA_ESQUERDA", raio, angulo)); }
@@ -61,6 +66,21 @@ public class Servidor extends Tarefa {
             e.printStackTrace();
         }
     }
+    
+    private int tempoReta(int d) {
+        // d está em cm, vel em cm/ms → resultado em ms
+        return (int) ((d / vel) + comunicacao);
+    }
+
+    private int tempoCurva(int r, int a) {
+        double rad = 2 * Math.PI * r * (a / 360.0);
+        return (int) ((rad / vel) + comunicacao);
+    }
+
+    private int tempoParar() {
+        return comunicacao;
+    }
+
 
     private void executarComandoNoRobot(Comando c) {
         if (c == null) return;
@@ -68,26 +88,33 @@ public class Servidor extends Tarefa {
         switch (c.getTipo()) {
             case "RETA":
                 robot.Reta(c.getArg1());
-                sleepTempo(CalcularTempos.tempoReta(c.getArg1()));
+                sleepTempo(tempoReta(c.getArg1()));
                 break;
+
             case "CURVA_DIREITA":
                 robot.CurvarDireita(c.getArg1(), c.getArg2());
-                sleepTempo(CalcularTempos.tempoCurva(c.getArg1(), c.getArg2()));
+                sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
                 break;
+
             case "CURVA_ESQUERDA":
                 robot.CurvarEsquerda(c.getArg1(), c.getArg2());
-                sleepTempo(CalcularTempos.tempoCurva(c.getArg1(), c.getArg2()));
+                sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
                 break;
+
             case "PARAR":
                 robot.Parar(false);
-                sleepTempo(CalcularTempos.tempoParar());
+                sleepTempo(tempoParar());
                 break;
+
             default:
                 System.out.println("[Servidor] Comando desconhecido: " + c.getTipo());
                 break;
         }
     }
 
+
+    
+    
     private void sleepTempo(int ms) {
         try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
     }
