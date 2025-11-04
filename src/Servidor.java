@@ -11,7 +11,7 @@ public class Servidor extends Tarefa {
     public final BufferCircular buffer;
     private final BaseDados db;
     private final RobotLegoEV3Simula robot;
-    public final Semaphore s = new Semaphore(1); //sincronização com a gui
+
 
     public Servidor(BufferCircular buffer, BaseDados db) {
         this.buffer = Objects.requireNonNull(buffer);

@@ -46,17 +46,20 @@ public class GUI extends JFrame {
         btnFrente.setBackground(Color.GREEN);
         btnFrente.setBounds(237, 108, 99, 32);
         btnFrente.addActionListener(e -> {
-        	try {
-        	    db.getServidor().s.acquire();
-        	    db.getServidor().Reta(db.getUltimaDistancia());
-        	    db.getServidor().Parar(false);
-        	} catch (InterruptedException e1) {
-        	    Thread.currentThread().interrupt();
-        	} finally {
-        	    db.getServidor().s.release();
-        	}
+            if (movimentoAleatorioAtivo != null)
+                movimentoAleatorioAtivo.bloquear();  // pausa o movimento aleatório
+
+            try {
+                db.getServidor().Reta(db.getUltimaDistancia());
+                db.getServidor().Parar(false);
+            } finally {
+                if (movimentoAleatorioAtivo != null)
+                    movimentoAleatorioAtivo.desbloquear(); // retoma o movimento aleatório
+            }
+
             MyPrint("fiz uma reta com " + db.getUltimaDistancia());
         });
+
         contentPane.add(btnFrente);
 
         JButton btnTras = new JButton("TRÁS");
@@ -64,13 +67,11 @@ public class GUI extends JFrame {
         btnTras.setBounds(237, 171, 99, 32);
         btnTras.addActionListener(e -> {
         	try {
-        	    db.getServidor().s.acquire();
+        		 db.getServidor().bloquear(); 
         	    db.getServidor().Reta(- db.getUltimaDistancia());
         	    db.getServidor().Parar(false);
-        	} catch (InterruptedException e1) {
-        	    Thread.currentThread().interrupt();
         	} finally {
-        	    db.getServidor().s.release();
+        		 db.getServidor().desbloquear(); 
         	}
             MyPrint("fiz uma marcha trás com " + db.getUltimaDistancia());
         });
@@ -113,13 +114,11 @@ public class GUI extends JFrame {
         btnEsq.setBounds(139, 140, 99, 32);
         btnEsq.addActionListener(e -> {
         	try {
-        	    db.getServidor().s.acquire();
+        		 db.getServidor().bloquear(); 
         	    db.getServidor().CurvarEsquerda(db.getUltimoRaio(), db.getUltimoAngulo());
         	    db.getServidor().Parar(false);
-        	} catch (InterruptedException e1) {
-        	    Thread.currentThread().interrupt();
         	} finally {
-        	    db.getServidor().s.release();
+        		 db.getServidor().desbloquear(); 
         	}
             MyPrint("robot fez uma curva esquerda com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
         });

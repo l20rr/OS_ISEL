@@ -19,10 +19,9 @@ public abstract class Tarefa extends Thread{
 	
 	
 	public void bloquear() {
+		sem.drainPermits();
 		estado = BLOQUEADO;
-		try {
-			sem.acquire();
-		} catch (InterruptedException e) {e.printStackTrace();}
+	
 	}
 	
 	private void esperaTrabalho() {
