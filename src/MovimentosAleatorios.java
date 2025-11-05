@@ -35,40 +35,50 @@ public class MovimentosAleatorios extends Tarefa {
     private String formatLinha(int index, Comando c) {
         String nome;
         switch (c.getTipo()) {
-            case "RETA": 
-            	nome = "Reta"; break;
-            case "CURVA_DIREITA": 
-            	nome = "Curva_Direita"; break;
-            case "CURVA_ESQUERDA":
-            	nome = "Curva_Esquerda"; break;
-            default: 
-            	nome = c.getTipo(); break;
+            case "RETA": nome = "Reta"; break;
+            case "CURVA_DIREITA": nome = "Curva Direita"; break;
+            case "CURVA_ESQUERDA": nome = "Curva Esquerda"; break;
+            default: nome = c.getTipo(); break;
         }
         return index + " - " + nome + " (" + c.getArg1() + "," + c.getArg2() + ")";
     }
 
     @Override
     protected void runing() {
-        if (db.getServidor() == null ) {
+        if (db.getServidor() == null) {
             try { Thread.sleep(500); } catch (InterruptedException e) { return; }
-            return; // espera servidor pronto
+            return;
         }
 
-        for (int i = 0; i < quantidadeComandos; i++) {
-            Comando c = gerarComando();
-            db.getServidor().buffer.inserirElemento(c);
-            if (gui != null) gui.MyPrint(formatLinha(i + 1, c));
+        try {
+            // 🔒 Bloqueia o semáforo uma única vez para o lote todo
+            db.getServidor().s.acquire();
 
-            try { 
-            	Thread.sleep(150); 
-            	} catch (InterruptedException e) { 
-            		return; 
-            		}
+            for (int i = 0; i < quantidadeComandos; i++) {
+                Comando c = gerarComando();
+                db.getServidor().buffer.inserirElemento(c);
+                if (gui != null) gui.MyPrint(formatLinha(i + 1, c));
+
+                try {
+                    Thread.sleep(150);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+
+            // comando final: PARAR
+            Comando parar = new Comando("PARAR", 0, 0);
+            db.getServidor().buffer.inserirElemento(parar);
+            if (gui != null) gui.MyPrint("Parar(false)");
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            // 🔓 Libera o semáforo só depois do lote inteiro
+            db.getServidor().s.release();
         }
-
-        // finaliza com comando PARAR
-        Comando parar = new Comando("PARAR", 0, 0);
-        db.getServidor().buffer.inserirElemento(parar);
-        if (gui != null) gui.MyPrint("Parar(false)");
     }
+
 }
+
