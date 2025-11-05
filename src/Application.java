@@ -3,7 +3,7 @@ public class Application {
     private BaseDados db;
 
     public Application() {
-        db = new BaseDados(); // BaseDados já cria o buffer e servidor
+        db = new BaseDados();
         gui = new GUI(this);
         gui.setVisible(true);
     }
@@ -12,8 +12,13 @@ public class Application {
         return db;
     }
 
+    public static void main(String[] args) {
+        Application app = new Application();
+        app.run();
+    }
+
     public void run() {
-        System.out.println("A aplicação começou!!");
+        System.out.println("A aplicação começou!");
 
         while (!db.isTerminar()) {
             try {
@@ -23,13 +28,7 @@ public class Application {
             }
         }
 
-        // Finalização
         db.getServidor().interrupt();
         System.out.println("A aplicação terminou!");
-    }
-
-    public static void main(String[] args) {
-        Application app = new Application();
-        app.run();
     }
 }

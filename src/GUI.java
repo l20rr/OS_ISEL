@@ -15,6 +15,7 @@ public class GUI extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
+    private boolean sensorAtivoSimulado = false;
 
     private JTextField textField_Distancia;
     private JTextField textField_Angulo;
@@ -28,12 +29,14 @@ public class GUI extends JFrame {
     public void MyPrint(String msg) {
         SwingUtilities.invokeLater(() -> textArea_console.append(msg + "\n"));
     }
+    private EvitarObstaculo evitar; // ✅ mover para o topo da classe
+
 
     public GUI(Application app) {
-        db = app.getDB();
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 702, 420);
+    	 this.db = app.getDB();
+    	 
+    	 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    	    setBounds(100, 100, 702, 420);
 
         contentPane = new JPanel();
         contentPane.setBackground(Color.WHITE);
@@ -46,20 +49,17 @@ public class GUI extends JFrame {
         btnFrente.setBackground(Color.GREEN);
         btnFrente.setBounds(237, 108, 99, 32);
         btnFrente.addActionListener(e -> {
-            if (movimentoAleatorioAtivo != null)
-                movimentoAleatorioAtivo.bloquear();  // pausa o movimento aleatório
-
-            try {
-                db.getServidor().Reta(db.getUltimaDistancia());
-                db.getServidor().Parar(false);
-            } finally {
-                if (movimentoAleatorioAtivo != null)
-                    movimentoAleatorioAtivo.desbloquear(); // retoma o movimento aleatório
-            }
-
+        	try {
+        	    db.getServidor().s.acquire();
+        	    db.getServidor().Reta(db.getUltimaDistancia());
+        	    db.getServidor().Parar(false);
+        	} catch (InterruptedException e1) {
+        	    Thread.currentThread().interrupt();
+        	} finally {
+        	    db.getServidor().s.release();
+        	}
             MyPrint("fiz uma reta com " + db.getUltimaDistancia());
         });
-
         contentPane.add(btnFrente);
 
         JButton btnTras = new JButton("TRÁS");
@@ -67,15 +67,36 @@ public class GUI extends JFrame {
         btnTras.setBounds(237, 171, 99, 32);
         btnTras.addActionListener(e -> {
         	try {
-        		 db.getServidor().bloquear(); 
+        	    db.getServidor().s.acquire();
         	    db.getServidor().Reta(- db.getUltimaDistancia());
         	    db.getServidor().Parar(false);
+        	} catch (InterruptedException e1) {
+        	    Thread.currentThread().interrupt();
         	} finally {
-        		 db.getServidor().desbloquear(); 
+        	    db.getServidor().s.release();
         	}
             MyPrint("fiz uma marcha trás com " + db.getUltimaDistancia());
         });
         contentPane.add(btnTras);
+        
+        JButton btnSensorToque = new JButton("Sensor Toque");
+        btnSensorToque.setBackground(Color.LIGHT_GRAY);
+        btnSensorToque.setBounds(503, 127, 150, 32);
+        contentPane.add(btnSensorToque);
+        btnSensorToque.addActionListener(e -> {
+            RobotLegoEV3Simula robot = db.getServidor().robot;
+
+            if (db.isRobotAberto() && robot != null) {
+                robot.simularToque(); // o toque ativa a leitura da thread Evitar
+            } else {
+                MyPrint("⚠ O robô ainda não está ligado.");
+            }
+        });
+
+
+
+        contentPane.add(btnSensorToque);
+
 
         JButton btnParar = new JButton("PARAR");
         btnParar.setBackground(Color.RED);
@@ -114,11 +135,13 @@ public class GUI extends JFrame {
         btnEsq.setBounds(139, 140, 99, 32);
         btnEsq.addActionListener(e -> {
         	try {
-        		 db.getServidor().bloquear(); 
+        	    db.getServidor().s.acquire();
         	    db.getServidor().CurvarEsquerda(db.getUltimoRaio(), db.getUltimoAngulo());
         	    db.getServidor().Parar(false);
+        	} catch (InterruptedException e1) {
+        	    Thread.currentThread().interrupt();
         	} finally {
-        		 db.getServidor().desbloquear(); 
+        	    db.getServidor().s.release();
         	}
             MyPrint("robot fez uma curva esquerda com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
         });
@@ -131,23 +154,38 @@ public class GUI extends JFrame {
         checkLigar.setSelected(db.isRobotAberto());
         checkLigar.addActionListener(e -> {
             if (db.isRobotAberto()) {
+                // desligar o robô
                 db.getServidor().CloseEV3();
                 db.setRobotAberto(false);
                 textField_Robot.setText("");
                 MyPrint("Servidor bloqueado e conexão encerrada.");
+
+                // 🔴 opcional: bloquear a thread Evitar
+                if (evitar != null) evitar.bloquear();
+
             } else {
+                // ligar o robô
                 boolean aberto = db.getServidor().OpenEV3(db.getNomeRobot());
                 db.setRobotAberto(aberto);
                 if (aberto) {
-                    db.getServidor().desbloquear(); // ✅ apenas desbloqueia, sem start
+                    db.getServidor().desbloquear();
                     textField_Robot.setText(db.getNomeRobot());
                     MyPrint("Servidor desbloqueado e ativo.");
+
+                    // 🚀 inicia a thread de EvitarObstaculo (só uma vez)
+                    if (evitar == null) {
+                        evitar = new EvitarObstaculo(db);
+                        MyPrint("Thread 'EvitarObstaculo' iniciada.");
+                    }
+
                 } else {
                     MyPrint("Falha ao abrir conexão com o robô.");
                 }
             }
             checkLigar.setSelected(db.isRobotAberto());
         });
+
+
 
         contentPane.add(checkLigar);
 

@@ -1,15 +1,29 @@
-import java.util.Objects;
-/*
 public class EvitarObstaculo extends Tarefa {
-	private final RobotLegoEV3 robot = new RobotLegoEV3();
-	public int S_1 = 0;
-	
-    public EvitarObstaculo() {
-	  robot.SensorToque(S_1);
+    private final BaseDados db;
+    private final RobotLegoEV3Simula robot;
+    private boolean toqueAnterior = false;
+
+    public EvitarObstaculo(BaseDados db) {
+        this.db = db;
+        this.robot = db.getServidor().robot;
+        this.start();
+        desbloquear();
     }
-	   @Override
-	   protected void runing() {
-		if()
-		
-	   }
-}*/
+
+    @Override
+    protected void runing() {
+        if (db.isRobotAberto() && robot != null) {
+            int toqueAtual = robot.SensorToque(robot.S_1);
+            if (toqueAtual == 1 && !toqueAnterior) {
+                System.out.println("🔵 Tocou!");
+            }
+            toqueAnterior = (toqueAtual == 1);
+        }
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}

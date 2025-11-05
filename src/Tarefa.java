@@ -13,7 +13,7 @@ public abstract class Tarefa extends Thread{
 	}
 	
 	public void desbloquear() {
-		estado = EXECUCAO;
+		estado = DORMIR;
 		sem.release();
 	}
 	

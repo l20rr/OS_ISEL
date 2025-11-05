@@ -3,12 +3,41 @@ public class RobotLegoEV3Simula {
     private boolean isConnected;
     private String robotName;
 
+
+    public final int S_1 = 1; // identificador do sensor
+    private boolean sensorAtivoSimula = true; // ativo o tempo todo
+    private boolean ultimoToque = false;
     public RobotLegoEV3Simula() {
         this.isConnected = false;
         this.robotName = "SimulatedEV3";
     }
 
- 
+
+    public int SensorToque(int sensor) {
+        if (!isConnected) return 0;
+        return (ultimoToque ? 1 : 0);
+    }
+
+    // simula um toque (é aqui que o "clicar" será sentido)
+    public void simularToque() {
+        if (!isConnected) {
+            System.out.println("[Simulação] Robô não está ligado — toque ignorado.");
+            return;
+        }
+
+        ultimoToque = true;
+      
+
+        // apaga o toque logo depois (para que o próximo clique volte a funcionar)
+        new Thread(() -> {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            ultimoToque = false;
+        }).start();
+    }
     public boolean OpenEV3(String nome) {
         this.robotName = nome != null ? nome : "SimulatedEV3";
         this.isConnected = true; // Corrige o problema
