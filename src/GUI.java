@@ -85,13 +85,13 @@ public class GUI extends JFrame {
         btnSensorToque.setBounds(503, 127, 150, 32);
         contentPane.add(btnSensorToque);
         btnSensorToque.addActionListener(e -> {
-            RobotLegoEV3Simula robot = db.getServidor().robot;
+            /*RobotLegoEV3Simula robot = db.getServidor().robot;
 
             if (db.isRobotAberto() && robot != null) {
                 robot.simularToque(); // o toque ativa a leitura da thread Evitar
             } else {
                 MyPrint("⚠ O robô ainda não está ligado.");
-            }
+            }*/
         });
 
 
