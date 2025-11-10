@@ -75,7 +75,7 @@ public class MovimentosAleatorios extends Tarefa {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
-            // 🔓 Libera o semáforo só depois do lote inteiro
+          
             db.getServidor().s.release();
         }
     }

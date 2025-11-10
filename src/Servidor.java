@@ -68,50 +68,53 @@ public class Servidor extends Tarefa {
         }
     }
     
-    private int tempoReta(int d) {
+    public int tempoReta(int d) {
         // d está em cm, vel em cm/ms → resultado em ms
         return (int) ((d / vel) + comunicacao);
     }
 
-    private int tempoCurva(int r, int a) {
+    public int tempoCurva(int r, int a) {
         double rad = 2 * Math.PI * r * (a / 360.0);
         return (int) ((rad / vel) + comunicacao);
     }
 
-    private int tempoParar() {
+    public int tempoParar() {
         return comunicacao;
     }
 
 
     private void executarComandoNoRobot(Comando c) {
         if (c == null) return;
+        try {
+            s.acquire(); 
 
-        switch (c.getTipo()) {
-            case "RETA":
-                robot.Reta(c.getArg1());
-                sleepTempo(tempoReta(c.getArg1()));
-                break;
+            switch (c.getTipo()) {
+                case "RETA":
+                    robot.Reta(c.getArg1());
+                    sleepTempo(tempoReta(c.getArg1()));
+                    break;
+                case "CURVA_DIREITA":
+                    robot.CurvarDireita(c.getArg1(), c.getArg2());
+                    sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
+                    break;
+                case "CURVA_ESQUERDA":
+                    robot.CurvarEsquerda(c.getArg1(), c.getArg2());
+                    sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
+                    break;
+                case "PARAR":
+                    robot.Parar(false);
+                    sleepTempo(tempoParar());
+                    break;
+            }
 
-            case "CURVA_DIREITA":
-                robot.CurvarDireita(c.getArg1(), c.getArg2());
-                sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
-                break;
-
-            case "CURVA_ESQUERDA":
-                robot.CurvarEsquerda(c.getArg1(), c.getArg2());
-                sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
-                break;
-
-            case "PARAR":
-                robot.Parar(false);
-                sleepTempo(tempoParar());
-                break;
-
-            default:
-                System.out.println("[Servidor] Comando desconhecido: " + c.getTipo());
-                break;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            s.release(); 
         }
     }
+
+    
 
 
     

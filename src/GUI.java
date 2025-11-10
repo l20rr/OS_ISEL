@@ -284,17 +284,16 @@ public class GUI extends JFrame {
         });
         // ------------------- CONSOLE ----------------------
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(116, 403, 456, 128);
+        scrollPane.setBounds(75, 400, 456, 128);
         contentPane.add(scrollPane);
+        
+                textArea_console = new JTextArea();
+                scrollPane.setRowHeaderView(textArea_console);
 
         JLabel lblConsole = new JLabel("Consola:");
         lblConsole.setFont(new Font("Tahoma", Font.PLAIN, 13));
         lblConsole.setBounds(65, 379, 82, 16);
         contentPane.add(lblConsole);
-        
-                textArea_console = new JTextArea();
-                textArea_console.setBounds(59, 458, 561, 93);
-                contentPane.add(textArea_console);
                 
                 JLabel Ficheiro = new JLabel("Ficheiro");
                 Ficheiro.setBounds(101, 273, 70, 23);

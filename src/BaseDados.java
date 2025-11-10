@@ -5,7 +5,7 @@ public class BaseDados {
 
     private final BufferCircular buffer;
     private final Servidor servidor; // Servidor único e final
-
+    private final EvitarObstaculo evitarObstaculo; 
     
     private int ultimaDistancia; 
     private int ultimoAngulo; 
@@ -17,12 +17,15 @@ public class BaseDados {
         this.robotAberto = false;
         this.buffer = new BufferCircular();
         this.servidor = new Servidor(buffer, this);
+        this.evitarObstaculo = new EvitarObstaculo(this);
+
     }
 
     public Servidor getServidor() {
         return servidor;
     }
 
+    
     public BufferCircular getBuffer() {
         return buffer;
     }
