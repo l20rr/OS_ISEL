@@ -11,29 +11,29 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class GUI extends JFrame {
+public class GUI2 extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private boolean sensorAtivoSimulado = false;
 
-    private JTextField textField_Distancia;
-    private JTextField textField_Angulo;
-    private JTextField textField_Robot;
-    private JTextField textField_Raio;
-    private JTextArea textArea_console; 
+    private JTextField textField_Distancia2;
+    private JTextField textField_Angulo2;
+    private JTextField textField_Robot2;
+    private JTextField textField_Raio2;
+    private JTextArea textArea_console2; 
 
     private BaseDados db;   
     private MovimentosAleatorios movimentoAleatorioAtivo = null;
 
     public void MyPrint(String msg) {
-        SwingUtilities.invokeLater(() -> textArea_console.append(msg + "\n"));
+        SwingUtilities.invokeLater(() -> textArea_console2.append(msg + "\n"));
     }
     private EvitarObstaculo evitar; // ✅ mover para o topo da classe
     private JTextField textField;
 
 
-    public GUI(Application app) {
+    public GUI2(Application app) {
     	 this.db = app.getDB();
     	 
     	 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -80,6 +80,24 @@ public class GUI extends JFrame {
         });
         contentPane.add(btnTras);
         
+        JButton btnSensorToque = new JButton("Sensor Toque");
+        btnSensorToque.setBackground(Color.LIGHT_GRAY);
+        btnSensorToque.setBounds(503, 127, 150, 32);
+        contentPane.add(btnSensorToque);
+        btnSensorToque.addActionListener(e -> {
+            /*RobotLegoEV3Simula robot = db.getServidor().robot;
+
+            if (db.isRobotAberto() && robot != null) {
+                robot.simularToque(); // o toque ativa a leitura da thread Evitar
+            } else {
+                MyPrint("⚠ O robô ainda não está ligado.");
+            }*/
+        });
+
+
+
+        contentPane.add(btnSensorToque);
+
 
         JButton btnParar = new JButton("PARAR");
         btnParar.setBackground(Color.RED);
@@ -140,7 +158,7 @@ public class GUI extends JFrame {
                 // desligar o robô
                 db.getServidor().CloseEV3();
                 db.setRobotAberto(false);
-                textField_Robot.setText("");
+                textField_Robot2.setText("");
                 MyPrint("Servidor bloqueado e conexão encerrada.");
 
                 // 🔴 opcional: bloquear a thread Evitar
@@ -152,7 +170,7 @@ public class GUI extends JFrame {
                 db.setRobotAberto(aberto);
                 if (aberto) {
                     db.getServidor().desbloquear();
-                    textField_Robot.setText(db.getNomeRobot());
+                    textField_Robot2.setText(db.getNomeRobot());
                     MyPrint("Servidor desbloqueado e ativo.");
 
                     // 🚀 inicia a thread de EvitarObstaculo (só uma vez)
@@ -179,14 +197,14 @@ public class GUI extends JFrame {
         lblDistancia.setBounds(369, 30, 70, 32);
         contentPane.add(lblDistancia);
 
-        textField_Distancia = new JTextField("" + db.getUltimaDistancia());
-        textField_Distancia.setBounds(430, 36, 50, 22);
-        textField_Distancia.setColumns(10);
-        textField_Distancia.addActionListener(e -> {
-            db.setUltimaDistancia(Integer.parseInt(textField_Distancia.getText()));
+        textField_Distancia2 = new JTextField("" + db.getUltimaDistancia());
+        textField_Distancia2.setBounds(430, 36, 50, 22);
+        textField_Distancia2.setColumns(10);
+        textField_Distancia2.addActionListener(e -> {
+            db.setUltimaDistancia(Integer.parseInt(textField_Distancia2.getText()));
             MyPrint("a distancia foi alterada para : " + db.getUltimaDistancia());
         });
-        contentPane.add(textField_Distancia);
+        contentPane.add(textField_Distancia2);
 
         // Ângulo
         JLabel lblAngulo = new JLabel("Ângulo");
@@ -194,14 +212,14 @@ public class GUI extends JFrame {
         lblAngulo.setBounds(166, 30, 70, 32);
         contentPane.add(lblAngulo);
 
-        textField_Angulo = new JTextField("" + db.getUltimoAngulo());
-        textField_Angulo.setColumns(10);
-        textField_Angulo.setBounds(210, 36, 50, 22);
-        textField_Angulo.addActionListener(e -> {
-            db.setUltimoAngulo(Integer.parseInt(textField_Angulo.getText()));
+        textField_Angulo2 = new JTextField("" + db.getUltimoAngulo());
+        textField_Angulo2.setColumns(10);
+        textField_Angulo2.setBounds(210, 36, 50, 22);
+        textField_Angulo2.addActionListener(e -> {
+            db.setUltimoAngulo(Integer.parseInt(textField_Angulo2.getText()));
             MyPrint("o ângulo foi alterado para : " + db.getUltimoAngulo());
         });
-        contentPane.add(textField_Angulo);
+        contentPane.add(textField_Angulo2);
 
         // Raio
         JLabel lblRaio = new JLabel("Raio");
@@ -209,81 +227,67 @@ public class GUI extends JFrame {
         lblRaio.setBounds(277, 30, 34, 32);
         contentPane.add(lblRaio);
 
-        textField_Raio = new JTextField("" + db.getUltimoRaio());
-        textField_Raio.setColumns(10);
-        textField_Raio.setBounds(308, 36, 50, 22);
-        textField_Raio.addActionListener(e -> {
-            db.setUltimoRaio(Integer.parseInt(textField_Raio.getText()));
+        textField_Raio2 = new JTextField("" + db.getUltimoRaio());
+        textField_Raio2.setColumns(10);
+        textField_Raio2.setBounds(308, 36, 50, 22);
+        textField_Raio2.addActionListener(e -> {
+            db.setUltimoRaio(Integer.parseInt(textField_Raio2.getText()));
             MyPrint("o raio foi alterado para : " + db.getUltimoRaio());
         });
-        contentPane.add(textField_Raio);
+        contentPane.add(textField_Raio2);
 
         // Robot
         JLabel lblRobot = new JLabel("ROBOT");
         lblRobot.setBounds(516, 37, 56, 16);
         contentPane.add(lblRobot);
 
-        textField_Robot = new JTextField();
-        textField_Robot.setColumns(10);
-        textField_Robot.setBounds(575, 31, 50, 22);
-        contentPane.add(textField_Robot);
+        textField_Robot2 = new JTextField();
+        textField_Robot2.setColumns(10);
+        textField_Robot2.setBounds(575, 31, 50, 22);
+        contentPane.add(textField_Robot2);
 
-        // ------------------- MOVIMENTOS ALEATÓRIOS ----------------------
-        JLabel lblNumero = new JLabel("Número:");
-        lblNumero.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        lblNumero.setBounds(475, 195, 65, 25);
-        contentPane.add(lblNumero);
-
-        JSpinner spinner = new JSpinner();
-        spinner.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        spinner.setBounds(527, 191, 56, 32);
-        contentPane.add(spinner);
-
-        JRadioButton rdbtnMovAlt = new JRadioButton("Movimentos Aleatórios");
-        rdbtnMovAlt.setBackground(Color.WHITE);
-        rdbtnMovAlt.setBounds(460, 160, 210, 25);
-        contentPane.add(rdbtnMovAlt);
-
-        rdbtnMovAlt.addActionListener(e -> {
-        	if (!rdbtnMovAlt.isSelected()) {
-        	    if (movimentoAleatorioAtivo != null) {
-        	        movimentoAleatorioAtivo.bloquear(); 
-        	        movimentoAleatorioAtivo = null;
-        	        MyPrint("Movimentos aleatórios bloqueados.");
-        	    }
-
-        	    db.getServidor().Parar(true); // para completamente e limpa buffer
-        	    MyPrint("Parada forçada após desativar movimentos aleatórios.");
-        	    return;
-        	}
-
-
-            int qtd = (int) spinner.getValue();
-            movimentoAleatorioAtivo = new MovimentosAleatorios(db, qtd, this);
-            movimentoAleatorioAtivo.start();       // inicia uma única vez
-            movimentoAleatorioAtivo.desbloquear(); // começa o loop de runing()
-            MyPrint("Gerando " + qtd + " movimentos aleatórios...");
-        });
+        
         // ------------------- CONSOLE ----------------------
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(75, 290, 520, 160);
+        scrollPane.setBounds(75, 400, 456, 128);
         contentPane.add(scrollPane);
         
-                textArea_console = new JTextArea();
-                scrollPane.setRowHeaderView(textArea_console);
+                textArea_console2 = new JTextArea();
+                scrollPane.setRowHeaderView(textArea_console2);
 
         JLabel lblConsole = new JLabel("Consola:");
         lblConsole.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        lblConsole.setBounds(65, 270, 82, 16);
+        lblConsole.setBounds(65, 379, 82, 16);
         contentPane.add(lblConsole);
                 
-        JButton btnLimpar = new JButton("Limpar");
-        btnLimpar.setBounds(170, 460, 100, 28);
-        contentPane.add(btnLimpar);
+                JLabel Ficheiro = new JLabel("Ficheiro");
+                Ficheiro.setBounds(101, 273, 70, 23);
+                contentPane.add(Ficheiro);
                 
-        JCheckBox chckbxImprimirCheckBox = new JCheckBox("Imprimir");
-        chckbxImprimirCheckBox.setBounds(410, 460, 100, 28);
-        contentPane.add(chckbxImprimirCheckBox);
+                textField = new JTextField();
+                textField.setBounds(166, 275, 316, 21);
+                contentPane.add(textField);
+                textField.setColumns(10);
+                
+                JButton btnNewButton = new JButton(". . .");
+                btnNewButton.setBounds(498, 274, 85, 21);
+                contentPane.add(btnNewButton);
+                
+                JButton btnNewButton_1 = new JButton("Gravar");
+                btnNewButton_1.setBounds(176, 306, 126, 21);
+                contentPane.add(btnNewButton_1);
+                
+                JButton btnNewButton_2 = new JButton("Reproduzir");
+                btnNewButton_2.setBounds(327, 306, 131, 21);
+                contentPane.add(btnNewButton_2);
+                
+                JButton btnLimpar = new JButton("Limpar");
+                btnLimpar.setBounds(166, 576, 85, 21);
+                contentPane.add(btnLimpar);
+                
+                JCheckBox chckbxImprimirCheckBox = new JCheckBox("Imprimir");
+                chckbxImprimirCheckBox.setBounds(408, 576, 93, 21);
+                contentPane.add(chckbxImprimirCheckBox);
 
         // ------------------- WINDOW CLOSE ----------------------
         addWindowListener(new WindowAdapter() {
@@ -306,3 +310,4 @@ public class GUI extends JFrame {
         this.db = db;
     }
 }
+

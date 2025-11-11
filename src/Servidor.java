@@ -114,10 +114,7 @@ public class Servidor extends Tarefa {
         }
     }
 
-    
-
-
-    
+   
     
     private void sleepTempo(int ms) {
         try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
