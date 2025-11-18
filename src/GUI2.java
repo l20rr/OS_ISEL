@@ -260,26 +260,41 @@ public class GUI2 extends JFrame {
         lblConsole.setBounds(65, 379, 82, 16);
         contentPane.add(lblConsole);
                 
-                JLabel Ficheiro = new JLabel("Ficheiro");
-                Ficheiro.setBounds(101, 273, 70, 23);
-                contentPane.add(Ficheiro);
-                
-                textField = new JTextField();
-                textField.setBounds(166, 275, 316, 21);
-                contentPane.add(textField);
-                textField.setColumns(10);
-                
-                JButton btnNewButton = new JButton(". . .");
-                btnNewButton.setBounds(498, 274, 85, 21);
-                contentPane.add(btnNewButton);
-                
-                JButton btnNewButton_1 = new JButton("Gravar");
-                btnNewButton_1.setBounds(176, 306, 126, 21);
-                contentPane.add(btnNewButton_1);
-                
-                JButton btnNewButton_2 = new JButton("Reproduzir");
-                btnNewButton_2.setBounds(327, 306, 131, 21);
-                contentPane.add(btnNewButton_2);
+        JLabel Ficheiro = new JLabel("Ficheiro");
+        Ficheiro.setBounds(101, 273, 70, 23);
+        contentPane.add(Ficheiro);
+
+        textField = new JTextField();
+        textField.setBounds(166, 275, 316, 21);
+        contentPane.add(textField);
+        textField.setColumns(10);
+
+        JButton btnNewButton = new JButton(". . .");
+        btnNewButton.setBounds(498, 274, 85, 21);
+        contentPane.add(btnNewButton);
+
+        // --- funcionalidade do botão "..." ---
+       /* btnNewButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                int result = fileChooser.showOpenDialog(null);
+
+                if (result == JFileChooser.APPROVE_OPTION) {
+                     file = fileChooser.getSelectedFile();
+                    textField.setText(file.getName());
+                }
+            }
+        });*/
+        // --------------------------------------
+
+        JButton btnNewButton_1 = new JButton("Gravar");
+        btnNewButton_1.setBounds(176, 306, 126, 21);
+        contentPane.add(btnNewButton_1);
+
+        JButton btnNewButton_2 = new JButton("Reproduzir");
+        btnNewButton_2.setBounds(327, 306, 131, 21);
+        contentPane.add(btnNewButton_2);
+
                 
                 JButton btnLimpar = new JButton("Limpar");
                 btnLimpar.setBounds(166, 576, 85, 21);
