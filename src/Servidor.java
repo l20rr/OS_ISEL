@@ -1,4 +1,4 @@
-/*****Thread consumidor
+/*Thread consumidor
  * 
  * Executa comandos do buffer e simula o tempo real de movimento
  * 
@@ -12,6 +12,7 @@ public class Servidor extends Tarefa {
     private final BaseDados db;
     public final RobotLegoEV3 robot;
     public final Semaphore s = new Semaphore(1); //sincronização com a gui
+    
 
     public Servidor(BufferCircular buffer, BaseDados db) {
         this.buffer = Objects.requireNonNull(buffer);
@@ -85,10 +86,9 @@ public class Servidor extends Tarefa {
 
     private void executarComandoNoRobot(Comando c) {
         if (c == null) return;
-        try {
-            s.acquire(); 
-
-            switch (c.getTipo()) {
+        
+        	synchronized (robot) {
+        		switch (c.getTipo()) {
                 case "RETA":
                     robot.Reta(c.getArg1());
                     sleepTempo(tempoReta(c.getArg1()));
@@ -106,12 +106,8 @@ public class Servidor extends Tarefa {
                     sleepTempo(tempoParar());
                     break;
             }
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            s.release(); 
-        }
+        	}
+            
     }
 
     

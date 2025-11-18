@@ -51,7 +51,7 @@ public class MovimentosAleatorios extends Tarefa {
         }
 
         try {
-            // 🔒 Bloqueia o semáforo uma única vez para o lote todo
+            // Bloqueia o semáforo uma única vez para o lote todo
             db.getServidor().s.acquire();
 
             for (int i = 0; i < quantidadeComandos; i++) {
