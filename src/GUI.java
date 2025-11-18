@@ -247,7 +247,8 @@ public class GUI extends JFrame {
         rdbtnMovAlt.addActionListener(e -> {
         	if (!rdbtnMovAlt.isSelected()) {
         	    if (movimentoAleatorioAtivo != null) {
-        	        movimentoAleatorioAtivo.bloquear(); 
+        	    	movimentoAleatorioAtivo.interrupt();
+        	    	movimentoAleatorioAtivo.bloquear(); 
         	        movimentoAleatorioAtivo = null;
         	        MyPrint("Movimentos aleatórios bloqueados.");
         	    }

@@ -55,6 +55,9 @@ public class MovimentosAleatorios extends Tarefa {
             db.getServidor().s.acquire();
 
             for (int i = 0; i < quantidadeComandos; i++) {
+            	if(Thread.currentThread().isInterrupted()) {
+            		return;
+            	}
                 Comando c = gerarComando();
                 db.getServidor().buffer.inserirElemento(c);
                 if (gui != null) gui.MyPrint(formatLinha(i + 1, c));
@@ -68,9 +71,11 @@ public class MovimentosAleatorios extends Tarefa {
             }
 
             // comando final: PARAR
-            Comando parar = new Comando("PARAR", 0, 0);
-            db.getServidor().buffer.inserirElemento(parar);
-            if (gui != null) gui.MyPrint("Parar(false)");
+            if(!Thread.currentThread().isInterrupted()) {
+            	Comando parar = new Comando("PARAR", 0, 0);
+            	db.getServidor().buffer.inserirElemento(parar);
+                if (gui != null) gui.MyPrint("Parar(false)");
+        	}
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

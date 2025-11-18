@@ -79,24 +79,24 @@ public class GUI2 extends JFrame {
             MyPrint("fiz uma marcha trás com " + db.getUltimaDistancia());
         });
         contentPane.add(btnTras);
-        
+        /*
         JButton btnSensorToque = new JButton("Sensor Toque");
         btnSensorToque.setBackground(Color.LIGHT_GRAY);
         btnSensorToque.setBounds(503, 127, 150, 32);
         contentPane.add(btnSensorToque);
         btnSensorToque.addActionListener(e -> {
-            /*RobotLegoEV3Simula robot = db.getServidor().robot;
+            RobotLegoEV3Simula robot = db.getServidor().robot;
 
             if (db.isRobotAberto() && robot != null) {
                 robot.simularToque(); // o toque ativa a leitura da thread Evitar
             } else {
                 MyPrint("⚠ O robô ainda não está ligado.");
-            }*/
+            }
         });
 
 
 
-        contentPane.add(btnSensorToque);
+        contentPane.add(btnSensorToque);*/
 
 
         JButton btnParar = new JButton("PARAR");
@@ -269,31 +269,21 @@ public class GUI2 extends JFrame {
         contentPane.add(textField);
         textField.setColumns(10);
 
-        JButton btnNewButton = new JButton(". . .");
-        btnNewButton.setBounds(498, 274, 85, 21);
-        contentPane.add(btnNewButton);
+        JButton btn_File = new JButton(". . .");
+        btn_File.setBounds(498, 274, 85, 21);
+        contentPane.add(btn_File);
+        
+        JToggleButton tglbtnGravar = new JToggleButton("Gravar");
+        tglbtnGravar.setBounds(228, 320, 147, 27);
+        contentPane.add(tglbtnGravar);
 
-        // --- funcionalidade do botão "..." ---
-       /* btnNewButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                int result = fileChooser.showOpenDialog(null);
-
-                if (result == JFileChooser.APPROVE_OPTION) {
-                     file = fileChooser.getSelectedFile();
-                    textField.setText(file.getName());
-                }
+        tglbtnGravar.addItemListener(e -> {
+            if (tglbtnGravar.isSelected()) {
+                tglbtnGravar.setText("Parar");
+            } else {
+                tglbtnGravar.setText("Gravar");
             }
-        });*/
-        // --------------------------------------
-
-        JButton btnNewButton_1 = new JButton("Gravar");
-        btnNewButton_1.setBounds(176, 306, 126, 21);
-        contentPane.add(btnNewButton_1);
-
-        JButton btnNewButton_2 = new JButton("Reproduzir");
-        btnNewButton_2.setBounds(327, 306, 131, 21);
-        contentPane.add(btnNewButton_2);
+        });
 
                 
                 JButton btnLimpar = new JButton("Limpar");
@@ -303,6 +293,8 @@ public class GUI2 extends JFrame {
                 JCheckBox chckbxImprimirCheckBox = new JCheckBox("Imprimir");
                 chckbxImprimirCheckBox.setBounds(408, 576, 93, 21);
                 contentPane.add(chckbxImprimirCheckBox);
+                
+             
 
         // ------------------- WINDOW CLOSE ----------------------
         addWindowListener(new WindowAdapter() {

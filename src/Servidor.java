@@ -10,14 +10,14 @@ import java.util.concurrent.Semaphore;
 public class Servidor extends Tarefa {
     public final BufferCircular buffer;
     private final BaseDados db;
-    public final RobotLegoEV3 robot;
+    public final RobotLegoEV3Simula robot;
     public final Semaphore s = new Semaphore(1); //sincronização com a gui
     
 
     public Servidor(BufferCircular buffer, BaseDados db) {
         this.buffer = Objects.requireNonNull(buffer);
         this.db = Objects.requireNonNull(db);
-        this.robot = new RobotLegoEV3();
+        this.robot = new RobotLegoEV3Simula();
         this.start();
     }
 
