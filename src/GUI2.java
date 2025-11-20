@@ -22,6 +22,8 @@ public class GUI2 extends JFrame {
     private JTextField textField_Robot2;
     private JTextField textField_Raio2;
     private JTextArea textArea_console2; 
+    BufferRec bufferRec = new BufferRec();
+    Gravador gravador = new Gravador(bufferRec);
 
     private BaseDados db;   
     private MovimentosAleatorios movimentoAleatorioAtivo = null;
@@ -31,6 +33,7 @@ public class GUI2 extends JFrame {
     }
     private EvitarObstaculo evitar; // ✅ mover para o topo da classe
     private JTextField textField;
+    private final JFileChooser fileChooser = new JFileChooser();
 
 
     public GUI2(Application app) {
@@ -60,6 +63,8 @@ public class GUI2 extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("fiz uma reta com " + db.getUltimaDistancia());
+            Comando comando = new Comando("FRENTE", db.getUltimaDistancia(), 0);
+            gravador.registrarComando(comando);
         });
         contentPane.add(btnFrente);
 
@@ -77,6 +82,8 @@ public class GUI2 extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("fiz uma marcha trás com " + db.getUltimaDistancia());
+            Comando comando = new Comando("TRAS", db.getUltimaDistancia(), 0);
+            gravador.registrarComando(comando);
         });
         contentPane.add(btnTras);
         /*
@@ -111,6 +118,8 @@ public class GUI2 extends JFrame {
 
             db.getServidor().Parar(true); // agora é seguro
             MyPrint("Robô parado (forçado), buffer limpo, servidor continua ativo.");
+            Comando comando = new Comando("PARAR", 0, 0);
+            gravador.registrarComando(comando);
         });
 
         contentPane.add(btnParar);
@@ -128,6 +137,8 @@ public class GUI2 extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("robot fez uma curva direita com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
+            Comando comando = new Comando("DIREITA", db.getUltimoRaio(), db.getUltimoAngulo());
+            gravador.registrarComando(comando);
         });
         contentPane.add(btnDir);
 
@@ -145,6 +156,8 @@ public class GUI2 extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("robot fez uma curva esquerda com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
+            Comando comando = new Comando("ESQUERDA", db.getUltimoRaio(), db.getUltimoAngulo());
+            gravador.registrarComando(comando);
         });
         contentPane.add(btnEsq);
 
@@ -249,7 +262,7 @@ public class GUI2 extends JFrame {
         
         // ------------------- CONSOLE ----------------------
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(75, 400, 456, 128);
+        scrollPane.setBounds(94, 407, 456, 128);
         contentPane.add(scrollPane);
         
                 textArea_console2 = new JTextArea();
@@ -268,10 +281,19 @@ public class GUI2 extends JFrame {
         textField.setBounds(166, 275, 316, 21);
         contentPane.add(textField);
         textField.setColumns(10);
+        
+        JToggleButton file_btn = new JToggleButton("...");
+        file_btn.setBounds(499, 271, 70, 27);
+        contentPane.add(file_btn);
 
-        JButton btn_File = new JButton(". . .");
-        btn_File.setBounds(498, 274, 85, 21);
-        contentPane.add(btn_File);
+        file_btn.addItemListener(e -> {
+            if (file_btn.isSelected()) {
+                fileChooser.showOpenDialog(contentPane);
+                file_btn.setSelected(false); 
+            }
+        });
+
+        
         
         JToggleButton tglbtnGravar = new JToggleButton("Gravar");
         tglbtnGravar.setBounds(228, 320, 147, 27);
@@ -280,8 +302,12 @@ public class GUI2 extends JFrame {
         tglbtnGravar.addItemListener(e -> {
             if (tglbtnGravar.isSelected()) {
                 tglbtnGravar.setText("Parar");
+                gravador.setGravando(true); // ativa gravação
+                MyPrint("Gravação iniciada.");
             } else {
                 tglbtnGravar.setText("Gravar");
+                gravador.setGravando(false); // desativa gravação
+                MyPrint("Gravação parada.");
             }
         });
 
@@ -291,9 +317,18 @@ public class GUI2 extends JFrame {
                 contentPane.add(btnLimpar);
                 
                 JCheckBox chckbxImprimirCheckBox = new JCheckBox("Imprimir");
+                chckbxImprimirCheckBox.addActionListener(new ActionListener() {
+                	public void actionPerformed(ActionEvent e) {
+                		String comandos = gravador.bufferToString();
+                		MyPrint("Comandos gravados:\n" + comandos);
+                	}
+                });
                 chckbxImprimirCheckBox.setBounds(408, 576, 93, 21);
                 contentPane.add(chckbxImprimirCheckBox);
+              
                 
+              
+             
              
 
         // ------------------- WINDOW CLOSE ----------------------
