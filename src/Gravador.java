@@ -7,7 +7,8 @@
  * 
  * !!!! ter ToString para os comandos e para o buffer2!!!! 
  * */
-
+import java.io.FileWriter;
+import java.io.IOException;
     
 public class Gravador {
 
@@ -28,9 +29,19 @@ public class Gravador {
     }
 
     
-    public void registrarComando(Comando comando) {
+    public void registarComando(Comando comando) {
         if (gravando) {
             bufferRec.inserirElemento(comando);
+        }
+    }
+    
+    public void fileWriter() {
+    	try (FileWriter writer = new FileWriter("Comandos.txt")) {
+    		 String conteudo_comandos = bufferToString(); 
+            writer.write(conteudo_comandos);
+            System.out.println("Arquivo escrito com sucesso!");
+        } catch (IOException e) {
+            System.out.println("Erro ao escrever no arquivo: " + e.getMessage());
         }
     }
 

@@ -2,7 +2,7 @@ import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.Beans;
-
+import java.io.File;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -31,7 +31,7 @@ public class GUI2 extends JFrame {
     public void MyPrint(String msg) {
         SwingUtilities.invokeLater(() -> textArea_console2.append(msg + "\n"));
     }
-    private EvitarObstaculo evitar; // ✅ mover para o topo da classe
+    private EvitarObstaculo evitar; //mover para o topo da classe
     private JTextField textField;
     private final JFileChooser fileChooser = new JFileChooser();
 
@@ -64,7 +64,7 @@ public class GUI2 extends JFrame {
         	}
             MyPrint("fiz uma reta com " + db.getUltimaDistancia());
             Comando comando = new Comando("FRENTE", db.getUltimaDistancia(), 0);
-            gravador.registrarComando(comando);
+            gravador.registarComando(comando);
         });
         contentPane.add(btnFrente);
 
@@ -83,28 +83,9 @@ public class GUI2 extends JFrame {
         	}
             MyPrint("fiz uma marcha trás com " + db.getUltimaDistancia());
             Comando comando = new Comando("TRAS", db.getUltimaDistancia(), 0);
-            gravador.registrarComando(comando);
+            gravador.registarComando(comando);
         });
         contentPane.add(btnTras);
-        /*
-        JButton btnSensorToque = new JButton("Sensor Toque");
-        btnSensorToque.setBackground(Color.LIGHT_GRAY);
-        btnSensorToque.setBounds(503, 127, 150, 32);
-        contentPane.add(btnSensorToque);
-        btnSensorToque.addActionListener(e -> {
-            RobotLegoEV3Simula robot = db.getServidor().robot;
-
-            if (db.isRobotAberto() && robot != null) {
-                robot.simularToque(); // o toque ativa a leitura da thread Evitar
-            } else {
-                MyPrint("⚠ O robô ainda não está ligado.");
-            }
-        });
-
-
-
-        contentPane.add(btnSensorToque);*/
-
 
         JButton btnParar = new JButton("PARAR");
         btnParar.setBackground(Color.RED);
@@ -119,7 +100,7 @@ public class GUI2 extends JFrame {
             db.getServidor().Parar(true); // agora é seguro
             MyPrint("Robô parado (forçado), buffer limpo, servidor continua ativo.");
             Comando comando = new Comando("PARAR", 0, 0);
-            gravador.registrarComando(comando);
+            gravador.registarComando(comando);
         });
 
         contentPane.add(btnParar);
@@ -138,7 +119,7 @@ public class GUI2 extends JFrame {
         	}
             MyPrint("robot fez uma curva direita com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
             Comando comando = new Comando("DIREITA", db.getUltimoRaio(), db.getUltimoAngulo());
-            gravador.registrarComando(comando);
+            gravador.registarComando(comando);
         });
         contentPane.add(btnDir);
 
@@ -157,7 +138,7 @@ public class GUI2 extends JFrame {
         	}
             MyPrint("robot fez uma curva esquerda com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
             Comando comando = new Comando("ESQUERDA", db.getUltimoRaio(), db.getUltimoAngulo());
-            gravador.registrarComando(comando);
+            gravador.registarComando(comando);
         });
         contentPane.add(btnEsq);
 
@@ -174,7 +155,7 @@ public class GUI2 extends JFrame {
                 textField_Robot2.setText("");
                 MyPrint("Servidor bloqueado e conexão encerrada.");
 
-                // 🔴 opcional: bloquear a thread Evitar
+
                 if (evitar != null) evitar.bloquear();
 
             } else {
@@ -186,7 +167,7 @@ public class GUI2 extends JFrame {
                     textField_Robot2.setText(db.getNomeRobot());
                     MyPrint("Servidor desbloqueado e ativo.");
 
-                    // 🚀 inicia a thread de EvitarObstaculo (só uma vez)
+                    
                     if (evitar == null) {
                         evitar = new EvitarObstaculo(db);
                         MyPrint("Thread 'EvitarObstaculo' iniciada.");
@@ -287,10 +268,17 @@ public class GUI2 extends JFrame {
         contentPane.add(file_btn);
 
         file_btn.addItemListener(e -> {
-            if (file_btn.isSelected()) {
-                fileChooser.showOpenDialog(contentPane);
-                file_btn.setSelected(false); 
-            }
+        	   if (file_btn.isSelected()) {
+
+        	        int result = fileChooser.showOpenDialog(contentPane);
+
+        	        if (result == JFileChooser.APPROVE_OPTION) {
+        	            File arquivo = fileChooser.getSelectedFile();
+        	            textField.setText(arquivo.getAbsolutePath()); // mostra caminho completo
+        	             }
+
+        	        file_btn.setSelected(false); 
+        	    }
         });
 
         
@@ -308,14 +296,10 @@ public class GUI2 extends JFrame {
                 tglbtnGravar.setText("Gravar");
                 gravador.setGravando(false); // desativa gravação
                 MyPrint("Gravação parada.");
+                
+                gravador.fileWriter(); 
             }
-        });
-
-                
-                JButton btnLimpar = new JButton("Limpar");
-                btnLimpar.setBounds(166, 576, 85, 21);
-                contentPane.add(btnLimpar);
-                
+        });        
                 JCheckBox chckbxImprimirCheckBox = new JCheckBox("Imprimir");
                 chckbxImprimirCheckBox.addActionListener(new ActionListener() {
                 	public void actionPerformed(ActionEvent e) {
@@ -327,7 +311,9 @@ public class GUI2 extends JFrame {
                 contentPane.add(chckbxImprimirCheckBox);
               
                 
-              
+                JButton btnLimpar = new JButton("Limpar");
+                btnLimpar.setBounds(166, 576, 85, 21);
+                contentPane.add(btnLimpar);
              
              
 
