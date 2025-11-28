@@ -4,7 +4,9 @@ public class BaseDados {
     private String nomeRobot;
 
     private final BufferCircular buffer;
+    private final BufferRec bufferR;
     private final Servidor servidor; // Servidor único e final
+    private final Gravador gravador;
     private final EvitarObstaculo evitarObstaculo; 
     
     private int ultimaDistancia; 
@@ -17,6 +19,8 @@ public class BaseDados {
         this.robotAberto = false;
         this.buffer = new BufferCircular();
         this.servidor = new Servidor(buffer, this);
+		this.bufferR = new BufferRec();
+        this.gravador = new Gravador (bufferR);
         this.evitarObstaculo = new EvitarObstaculo(this);
 
     }
@@ -78,4 +82,8 @@ public class BaseDados {
     public void setUltimoRaio(int ultimoRaio) {
         this.ultimoRaio = ultimoRaio;
     }
+
+	public Gravador getGravador() {
+		return gravador;
+	}
 }

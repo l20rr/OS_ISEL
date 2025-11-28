@@ -60,6 +60,7 @@ public class MovimentosAleatorios extends Tarefa {
             	}
                 Comando c = gerarComando();
                 db.getServidor().buffer.inserirElemento(c);
+                db.getGravador().registarComando(c);
                 if (gui != null) gui.MyPrint(formatLinha(i + 1, c));
 
                 try {

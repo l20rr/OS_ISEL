@@ -9,6 +9,7 @@ import java.util.concurrent.Semaphore;
 
 public class Servidor extends Tarefa {
     public final BufferCircular buffer;
+    
     private final BaseDados db;
     public final RobotLegoEV3Simula robot;
     public final Semaphore s = new Semaphore(1); //sincronização com a gui
@@ -26,9 +27,19 @@ public class Servidor extends Tarefa {
     private final int comunicacao = 100;
     
     
-    public void Reta(int distancia) { buffer.inserirElemento(new Comando("RETA", distancia, 0)); }
-    public void CurvarDireita(int raio, int angulo) { buffer.inserirElemento(new Comando("CURVA_DIREITA", raio, angulo)); }
-    public void CurvarEsquerda(int raio, int angulo) { buffer.inserirElemento(new Comando("CURVA_ESQUERDA", raio, angulo)); }
+    public void Reta(int distancia) { 
+    	buffer.inserirElemento(new Comando("RETA", distancia, 0)); 
+    	db.getGravador().registarComando(new Comando("RETA", distancia, 0));
+    }
+    public void CurvarDireita(int raio, int angulo) { 
+    	buffer.inserirElemento(new Comando("CURVA_DIREITA", raio, angulo)); 
+    	db.getGravador().registarComando(new Comando("CURVA_DIREITA", raio, angulo));
+    
+    }
+    public void CurvarEsquerda(int raio, int angulo) { 
+    	buffer.inserirElemento(new Comando("CURVA_ESQUERDA", raio, angulo)); 
+    	db.getGravador().registarComando(new Comando("CURVA_ESQUERDA", raio, angulo));
+    }
 
     public void Parar(boolean forcar) {
         if (forcar) {
@@ -38,6 +49,7 @@ public class Servidor extends Tarefa {
            
         } else {
             buffer.inserirElemento(new Comando("PARAR", 0, 0));
+            db.getGravador().registarComando(new Comando("PARAR", 0, 0));
         }
     }
 
@@ -87,25 +99,33 @@ public class Servidor extends Tarefa {
     private void executarComandoNoRobot(Comando c) {
         if (c == null) return;
         
-        	synchronized (robot) {
+        
         		switch (c.getTipo()) {
                 case "RETA":
-                    robot.Reta(c.getArg1());
+                	synchronized (robot) {
+                		robot.Reta(c.getArg1());
+                	}
                     sleepTempo(tempoReta(c.getArg1()));
                     break;
                 case "CURVA_DIREITA":
-                    robot.CurvarDireita(c.getArg1(), c.getArg2());
+                	synchronized (robot) {
+                		robot.CurvarDireita(c.getArg1(), c.getArg2());
+                	}
                     sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
                     break;
                 case "CURVA_ESQUERDA":
-                    robot.CurvarEsquerda(c.getArg1(), c.getArg2());
+                	synchronized (robot) {
+                		robot.CurvarEsquerda(c.getArg1(), c.getArg2());
+                	}
                     sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
                     break;
                 case "PARAR":
-                    robot.Parar(false);
+                	synchronized (robot) {
+                		robot.Parar(false);
+                	}
                     sleepTempo(tempoParar());
                     break;
-            }
+            
         	}
             
     }
