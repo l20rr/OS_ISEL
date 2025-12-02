@@ -1,0 +1,7 @@
+Comando[FRENTE, 20, 0]
+Comando[FRENTE, 20, 0]
+Comando[ESQUERDA, 12, 10]
+Comando[DIREITA, 12, 10]
+Comando[TRAS, 20, 0]
+Comando[FRENTE, 20, 0]
+Comando[FRENTE, 20, 0]

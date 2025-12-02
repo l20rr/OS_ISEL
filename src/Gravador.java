@@ -7,8 +7,15 @@
  * 
  * !!!! ter ToString para os comandos e para o buffer2!!!! 
  * */
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
     
 public class Gravador {
 
@@ -36,14 +43,37 @@ public class Gravador {
     }
     
     public void fileWriter() {
-    	try (FileWriter writer = new FileWriter("Comandos.txt")) {
-    		 String conteudo_comandos = bufferToString(); 
+        try {
+            OutputStream os = new FileOutputStream("Comandos.txt");
+            Writer writer = new OutputStreamWriter(os, "UTF-8");
+
+            String conteudo_comandos = bufferToString();
             writer.write(conteudo_comandos);
+
+            writer.close();
+            os.close();
+
             System.out.println("Arquivo escrito com sucesso!");
         } catch (IOException e) {
             System.out.println("Erro ao escrever no arquivo: " + e.getMessage());
         }
     }
+    public void fileReader() {
+        try {
+            InputStream is = new FileInputStream("Comandos.txt");
+            Reader reader = new InputStreamReader(is, "UTF-8");
+
+            StringBuilder sb = new StringBuilder();
+            
+            //não sei oq fazer (?) 
+            //devo transformar em comando ou já é um comando ? 
+           
+
+        } catch (IOException e) {
+            System.out.println("Erro ao ler o arquivo: " + e.getMessage());
+        }
+    }
+
 
     
     public String bufferToString() {
