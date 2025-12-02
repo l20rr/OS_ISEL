@@ -3,7 +3,7 @@ import java.util.Random;
 public class EvitarObstaculo extends Tarefa {
     private final BaseDados db;
     private final Servidor servidor;
-    private final RobotLegoEV3Simula robot;
+    private final RobotLegoEV3 robot;
     private final Random rand = new Random();
     private boolean toqueAnterior = false;
 

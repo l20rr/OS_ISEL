@@ -22,6 +22,7 @@ public class GUI extends JFrame {
     private JTextField textField_Robot;
     private JTextField textField_Raio;
     private JTextArea textArea_console; 
+    private Gravador gravador;
 
     private BaseDados db;   
     private MovimentosAleatorios movimentoAleatorioAtivo = null;
@@ -35,7 +36,7 @@ public class GUI extends JFrame {
 
     public GUI(Application app) {
     	 this.db = app.getDB();
-    	 
+    	 this.gravador = db.getGravador();
     	 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	    setBounds(100, 100, 673, 644);
 
@@ -44,6 +45,8 @@ public class GUI extends JFrame {
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(null);
+        
+
 
         // ------------------- BOTÕES ----------------------
         JButton btnFrente = new JButton("FRENTE");
@@ -60,6 +63,8 @@ public class GUI extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("fiz uma reta com " + db.getUltimaDistancia());
+            Comando comando = new Comando("FRENTE", db.getUltimaDistancia(), 0);
+            gravador.registarComando(comando);
         });
         contentPane.add(btnFrente);
 
@@ -77,9 +82,10 @@ public class GUI extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("fiz uma marcha trás com " + db.getUltimaDistancia());
+            Comando comando = new Comando("TRAS", db.getUltimaDistancia(), 0);
+            gravador.registarComando(comando);
         });
         contentPane.add(btnTras);
-        
 
         JButton btnParar = new JButton("PARAR");
         btnParar.setBackground(Color.RED);
@@ -93,6 +99,8 @@ public class GUI extends JFrame {
 
             db.getServidor().Parar(true); // agora é seguro
             MyPrint("Robô parado (forçado), buffer limpo, servidor continua ativo.");
+            Comando comando = new Comando("PARAR", 0, 0);
+            gravador.registarComando(comando);
         });
 
         contentPane.add(btnParar);
@@ -110,6 +118,8 @@ public class GUI extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("robot fez uma curva direita com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
+            Comando comando = new Comando("DIREITA", db.getUltimoRaio(), db.getUltimoAngulo());
+            gravador.registarComando(comando);
         });
         contentPane.add(btnDir);
 
@@ -127,6 +137,8 @@ public class GUI extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("robot fez uma curva esquerda com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
+            Comando comando = new Comando("ESQUERDA", db.getUltimoRaio(), db.getUltimoAngulo());
+            gravador.registarComando(comando);
         });
         contentPane.add(btnEsq);
 
