@@ -29,7 +29,7 @@ public class GUI extends JFrame {
     public void MyPrint(String msg) {
         SwingUtilities.invokeLater(() -> textArea_console.append(msg + "\n"));
     }
-    private EvitarObstaculo evitar; // ✅ mover para o topo da classe
+    private EvitarObstaculo evitar; 
     private JTextField textField;
 
 
@@ -136,35 +136,17 @@ public class GUI extends JFrame {
         checkLigar.setBackground(Color.WHITE);
         checkLigar.setSelected(db.isRobotAberto());
         checkLigar.addActionListener(e -> {
-            if (db.isRobotAberto()) {
-                // desligar o robô
-                db.getServidor().CloseEV3();
-                db.setRobotAberto(false);
-                textField_Robot.setText("");
-                MyPrint("Servidor bloqueado e conexão encerrada.");
-
-                // 🔴 opcional: bloquear a thread Evitar
-                if (evitar != null) evitar.bloquear();
-
-            } else {
-                // ligar o robô
+            if (!db.isRobotAberto()) {
                 boolean aberto = db.getServidor().OpenEV3(db.getNomeRobot());
                 db.setRobotAberto(aberto);
                 if (aberto) {
                     db.getServidor().desbloquear();
                     textField_Robot.setText(db.getNomeRobot());
                     MyPrint("Servidor desbloqueado e ativo.");
-
-                    // 🚀 inicia a thread de EvitarObstaculo (só uma vez)
-                    if (evitar == null) {
-                        evitar = new EvitarObstaculo(db);
-                        MyPrint("Thread 'EvitarObstaculo' iniciada.");
-                    }
-
-                } else {
-                    MyPrint("Falha ao abrir conexão com o robô.");
+                    if (evitar == null) evitar = new EvitarObstaculo(db);
                 }
             }
+            // Se já estiver aberto, NÃO DESLIGUE O ROBÔ
             checkLigar.setSelected(db.isRobotAberto());
         });
 

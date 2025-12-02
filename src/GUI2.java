@@ -22,8 +22,7 @@ public class GUI2 extends JFrame {
     private JTextField textField_Robot2;
     private JTextField textField_Raio2;
     private JTextArea textArea_console2; 
-    BufferRec bufferRec = new BufferRec();
-    Gravador gravador = new Gravador(bufferRec);
+    private Gravador gravador;
 
     private BaseDados db;   
     private MovimentosAleatorios movimentoAleatorioAtivo = null;
@@ -38,7 +37,7 @@ public class GUI2 extends JFrame {
 
     public GUI2(Application app) {
     	 this.db = app.getDB();
-    	 
+    	 this.gravador = db.getGravador();
     	 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	    setBounds(100, 100, 673, 644);
 
