@@ -51,11 +51,6 @@ public class BufferRec {
     }
 
 
-    public boolean estaVazio() {
-        return elementosOcupados.availablePermits() == 0;
-    }
-
-
     public void limpar() {
         try {
             elementosOcupados.drainPermits(); 

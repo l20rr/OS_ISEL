@@ -148,17 +148,16 @@ public class GUI2 extends JFrame {
         checkLigar.setSelected(db.isRobotAberto());
         checkLigar.addActionListener(e -> {
             if (db.isRobotAberto()) {
-                // desligar o robô
+                // Desligar o robô
                 db.getServidor().CloseEV3();
                 db.setRobotAberto(false);
                 textField_Robot2.setText("");
                 MyPrint("Servidor bloqueado e conexão encerrada.");
 
-
                 if (evitar != null) evitar.bloquear();
 
             } else {
-                // ligar o robô
+                // Ligar o robô
                 boolean aberto = db.getServidor().OpenEV3(db.getNomeRobot());
                 db.setRobotAberto(aberto);
                 if (aberto) {
@@ -166,12 +165,8 @@ public class GUI2 extends JFrame {
                     textField_Robot2.setText(db.getNomeRobot());
                     MyPrint("Servidor desbloqueado e ativo.");
 
-                    
-                    if (evitar == null) {
-                        evitar = new EvitarObstaculo(db);
-                        MyPrint("Thread 'EvitarObstaculo' iniciada.");
-                    }
-
+                    // Evitar já foi criado na Application, apenas desbloquear
+                    if (evitar != null) evitar.desbloquear(); 
                 } else {
                     MyPrint("Falha ao abrir conexão com o robô.");
                 }
@@ -300,12 +295,11 @@ public class GUI2 extends JFrame {
             }
         });        
                 JCheckBox chckbxImprimirCheckBox = new JCheckBox("Imprimir");
-                chckbxImprimirCheckBox.addActionListener(new ActionListener() {
-                	public void actionPerformed(ActionEvent e) {
-                		String comandos = gravador.bufferToString();
-                		MyPrint("Comandos gravados:\n" + comandos);
-                	}
+                chckbxImprimirCheckBox.addActionListener(e -> {
+                    String comandos = gravador.fileReader(); // lê o arquivo
+                    MyPrint("Comandos no arquivo:\n" + comandos);
                 });
+
                 chckbxImprimirCheckBox.setBounds(408, 576, 93, 21);
                 contentPane.add(chckbxImprimirCheckBox);
               

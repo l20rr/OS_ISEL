@@ -49,9 +49,7 @@ public class BufferCircular {
         return c;
     }
 
-    public boolean estaVazio() {
-        return elementosOcupados.availablePermits() == 0;
-    }
+
 
     public void limpar() {
     	  try {

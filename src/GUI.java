@@ -148,17 +148,30 @@ public class GUI extends JFrame {
         checkLigar.setBackground(Color.WHITE);
         checkLigar.setSelected(db.isRobotAberto());
         checkLigar.addActionListener(e -> {
-            if (!db.isRobotAberto()) {
+            if (db.isRobotAberto()) {
+                // Desligar o robô
+                db.getServidor().CloseEV3();
+                db.setRobotAberto(false);
+                textField_Robot.setText("");
+                MyPrint("Servidor bloqueado e conexão encerrada.");
+
+                if (evitar != null) evitar.bloquear();
+
+            } else {
+                // Ligar o robô
                 boolean aberto = db.getServidor().OpenEV3(db.getNomeRobot());
                 db.setRobotAberto(aberto);
                 if (aberto) {
                     db.getServidor().desbloquear();
                     textField_Robot.setText(db.getNomeRobot());
                     MyPrint("Servidor desbloqueado e ativo.");
-                    if (evitar == null) evitar = new EvitarObstaculo(db);
+
+                    // Evitar já foi criado na Application, apenas desbloquear
+                    if (evitar != null) evitar.desbloquear(); 
+                } else {
+                    MyPrint("Falha ao abrir conexão com o robô.");
                 }
             }
-            // Se já estiver aberto, NÃO DESLIGUE O ROBÔ
             checkLigar.setSelected(db.isRobotAberto());
         });
 
