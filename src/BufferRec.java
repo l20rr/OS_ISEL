@@ -62,4 +62,8 @@ public class BufferRec {
             Thread.currentThread().interrupt();
         }
     }
+    
+    public boolean estaVazio() {
+        return elementosOcupados.availablePermits() == 0;
+    }
 }

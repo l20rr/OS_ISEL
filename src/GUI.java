@@ -276,28 +276,31 @@ public class GUI extends JFrame {
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(75, 290, 520, 160);
         contentPane.add(scrollPane);
+
+        textArea_console = new JTextArea();
         
-                textArea_console = new JTextArea();
-                scrollPane.setRowHeaderView(textArea_console);
+        
 
         JLabel lblConsole = new JLabel("Consola:");
         lblConsole.setFont(new Font("Tahoma", Font.PLAIN, 13));
         lblConsole.setBounds(65, 270, 82, 16);
         contentPane.add(lblConsole);
-                
+
         JButton btnLimpar = new JButton("Limpar");
         btnLimpar.setBounds(170, 460, 100, 28);
         contentPane.add(btnLimpar);
-                
+
         JCheckBox chckbxImprimirCheckBox = new JCheckBox("Imprimir");
         chckbxImprimirCheckBox.setBounds(410, 460, 100, 28);
         contentPane.add(chckbxImprimirCheckBox);
+
 
         // ------------------- WINDOW CLOSE ----------------------
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 if (db.isRobotAberto()) {
+                	db.getServidor().Parar(true);
                     db.getServidor().CloseEV3();
                 }
                

@@ -62,8 +62,7 @@ public class GUI2 extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("fiz uma reta com " + db.getUltimaDistancia());
-            Comando comando = new Comando("FRENTE", db.getUltimaDistancia(), 0);
-            gravador.registarComando(comando);
+            
         });
         contentPane.add(btnFrente);
 
@@ -81,8 +80,7 @@ public class GUI2 extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("fiz uma marcha trás com " + db.getUltimaDistancia());
-            Comando comando = new Comando("TRAS", db.getUltimaDistancia(), 0);
-            gravador.registarComando(comando);
+            
         });
         contentPane.add(btnTras);
 
@@ -98,8 +96,7 @@ public class GUI2 extends JFrame {
 
             db.getServidor().Parar(true); // agora é seguro
             MyPrint("Robô parado (forçado), buffer limpo, servidor continua ativo.");
-            Comando comando = new Comando("PARAR", 0, 0);
-            gravador.registarComando(comando);
+           
         });
 
         contentPane.add(btnParar);
@@ -117,8 +114,7 @@ public class GUI2 extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("robot fez uma curva direita com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
-            Comando comando = new Comando("DIREITA", db.getUltimoRaio(), db.getUltimoAngulo());
-            gravador.registarComando(comando);
+            
         });
         contentPane.add(btnDir);
 
@@ -136,8 +132,7 @@ public class GUI2 extends JFrame {
         	    db.getServidor().s.release();
         	}
             MyPrint("robot fez uma curva esquerda com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
-            Comando comando = new Comando("ESQUERDA", db.getUltimoRaio(), db.getUltimoAngulo());
-            gravador.registarComando(comando);
+            
         });
         contentPane.add(btnEsq);
 
@@ -241,7 +236,7 @@ public class GUI2 extends JFrame {
         contentPane.add(scrollPane);
         
                 textArea_console2 = new JTextArea();
-                scrollPane.setRowHeaderView(textArea_console2);
+                scrollPane.setViewportView(textArea_console2);
 
         JLabel lblConsole = new JLabel("Consola:");
         lblConsole.setFont(new Font("Tahoma", Font.PLAIN, 13));
@@ -296,8 +291,8 @@ public class GUI2 extends JFrame {
         });        
                 JCheckBox chckbxImprimirCheckBox = new JCheckBox("Imprimir");
                 chckbxImprimirCheckBox.addActionListener(e -> {
-                    String comandos = gravador.fileReader(); // lê o arquivo
-                    MyPrint("Comandos no arquivo:\n" + comandos);
+                    //String comandos = gravador.fileReader(); // lê o arquivo
+                    //MyPrint("Comandos no arquivo:\n" + comandos);
                 });
 
                 chckbxImprimirCheckBox.setBounds(408, 576, 93, 21);
@@ -315,6 +310,7 @@ public class GUI2 extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 if (db.isRobotAberto()) {
+                	db.getServidor().Parar(true);
                     db.getServidor().CloseEV3();
                 }
                
