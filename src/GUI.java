@@ -278,8 +278,7 @@ public class GUI extends JFrame {
         contentPane.add(scrollPane);
 
         textArea_console = new JTextArea();
-        
-        
+        scrollPane.setViewportView(textArea_console);   
 
         JLabel lblConsole = new JLabel("Consola:");
         lblConsole.setFont(new Font("Tahoma", Font.PLAIN, 13));
