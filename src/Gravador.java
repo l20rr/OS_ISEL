@@ -58,22 +58,40 @@ public class Gravador {
             System.out.println("Erro ao escrever no arquivo: " + e.getMessage());
         }
     }
-    public void fileReader() {
-        try {
-            InputStream is = new FileInputStream("Comandos.txt");
-            Reader reader = new InputStreamReader(is, "UTF-8");
+    public String fileReader() {
 
-            StringBuilder sb = new StringBuilder();
-            
-            //não sei oq fazer (?) 
-            //devo transformar em comando ou já é um comando ? 
-           
+
+        StringBuilder sb = new StringBuilder();
+
+
+        try (Reader reader = new InputStreamReader(new FileInputStream("Comandos.txt"), "UTF-8")) {
+
+
+            int c;
+
+
+            while ((c = reader.read()) != -1) {
+
+
+                sb.append((char) c);
+
+
+            }
+
+
+
+
 
         } catch (IOException e) {
-            System.out.println("Erro ao ler o arquivo: " + e.getMessage());
-        }
-    }
 
+            System.out.println("Erro ao ler o arquivo: " + e.getMessage());
+
+        }
+
+
+        return sb.toString();
+
+    }
 
     
     public String bufferToString() {

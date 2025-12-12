@@ -286,6 +286,9 @@ public class GUI extends JFrame {
         contentPane.add(lblConsole);
 
         JButton btnLimpar = new JButton("Limpar");
+        btnLimpar.addActionListener(e -> {
+        	textArea_console.setText(""); // limpa todo o conteúdo
+        });
         btnLimpar.setBounds(170, 460, 100, 28);
         contentPane.add(btnLimpar);
 

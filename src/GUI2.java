@@ -291,8 +291,8 @@ public class GUI2 extends JFrame {
         });        
                 JCheckBox chckbxImprimirCheckBox = new JCheckBox("Imprimir");
                 chckbxImprimirCheckBox.addActionListener(e -> {
-                    //String comandos = gravador.fileReader(); // lê o arquivo
-                    //MyPrint("Comandos no arquivo:\n" + comandos);
+                    String comandos = gravador.fileReader(); // lê o arquivo
+                    MyPrint("Comandos no arquivo:\n" + comandos);
                 });
 
                 chckbxImprimirCheckBox.setBounds(408, 576, 93, 21);
@@ -300,6 +300,10 @@ public class GUI2 extends JFrame {
               
                 
                 JButton btnLimpar = new JButton("Limpar");
+                btnLimpar.addActionListener(e -> {
+                	textArea_console2.setText(""); // limpa todo o conteúdo
+                });
+
                 btnLimpar.setBounds(166, 576, 85, 21);
                 contentPane.add(btnLimpar);
              
