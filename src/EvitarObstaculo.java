@@ -3,10 +3,9 @@ import java.util.Random;
 public class EvitarObstaculo extends Tarefa {
     private final BaseDados db;
     private final Servidor servidor;
-    private final RobotLegoEV3 robot;
+    private final RobotLegoEV3Simula robot;
     private final Gravador gravador;
     private final Random rand = new Random();
-    private boolean toqueAnterior = false;
 
     public EvitarObstaculo(BaseDados db, Gravador gravador) {
         this.db = db;
@@ -18,12 +17,12 @@ public class EvitarObstaculo extends Tarefa {
     }
 
     @Override
-    protected void runing() {
+	protected void executar() {
         synchronized(robot) {
             if (db.isRobotAberto() && robot != null) {
                 int toqueAtual = robot.SensorToque(robot.S_1);
 
-                if (toqueAtual == 1 && !toqueAnterior) {
+                if (toqueAtual == 1 ) {
                     System.out.println("Obstáculo detetado!");
 
                     // Parar imediatamente
@@ -52,11 +51,11 @@ public class EvitarObstaculo extends Tarefa {
                         try { Thread.sleep(servidor.tempoCurva(10, 90)); } catch (InterruptedException e) { e.printStackTrace(); }
                     }
                 }
-
-                toqueAnterior = (toqueAtual == 1);
             }
 
             try { Thread.sleep(50); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         }
     }
+
+
 }

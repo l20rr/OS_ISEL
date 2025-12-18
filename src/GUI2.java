@@ -52,17 +52,9 @@ public class GUI2 extends JFrame {
         btnFrente.setBackground(Color.GREEN);
         btnFrente.setBounds(237, 108, 99, 32);
         btnFrente.addActionListener(e -> {
-        	try {
-        	    db.getServidor().s.acquire();
-        	    db.getServidor().Reta(db.getUltimaDistancia());
-        	    db.getServidor().Parar(false);
-        	} catch (InterruptedException e1) {
-        	    Thread.currentThread().interrupt();
-        	} finally {
-        	    db.getServidor().s.release();
-        	}
-            MyPrint("fiz uma reta com " + db.getUltimaDistancia());
-            
+            Comando c = new Comando("RETA", db.getUltimaDistancia(), 0);
+            enviarComandoAsync(c);
+            gravador.registarComando(c); 
         });
         contentPane.add(btnFrente);
 
@@ -70,17 +62,9 @@ public class GUI2 extends JFrame {
         btnTras.setBackground(new Color(255, 128, 64));
         btnTras.setBounds(237, 171, 99, 32);
         btnTras.addActionListener(e -> {
-        	try {
-        	    db.getServidor().s.acquire();
-        	    db.getServidor().Reta(- db.getUltimaDistancia());
-        	    db.getServidor().Parar(false);
-        	} catch (InterruptedException e1) {
-        	    Thread.currentThread().interrupt();
-        	} finally {
-        	    db.getServidor().s.release();
-        	}
-            MyPrint("fiz uma marcha trás com " + db.getUltimaDistancia());
-            
+            Comando c = new Comando("RETA", -db.getUltimaDistancia(), 0);
+            enviarComandoAsync(c);
+            gravador.registarComando(c);  // registra o comando
         });
         contentPane.add(btnTras);
 
@@ -91,30 +75,22 @@ public class GUI2 extends JFrame {
             if (movimentoAleatorioAtivo != null) {
                 movimentoAleatorioAtivo.bloquear();
                 movimentoAleatorioAtivo = null;
-                MyPrint("Movimentos aleatórios bloqueados.");
+                MyPrint("Geração de movimentos aleatórios parada.");
             }
-
-            db.getServidor().Parar(true); // agora é seguro
-            MyPrint("Robô parado (forçado), buffer limpo, servidor continua ativo.");
-           
+            db.getServidor().pararForcado();
+            MyPrint("Robô parado (forçado).");
+            Comando c = new Comando("PARAR",0, 0);
+            gravador.registarComando(c); 
         });
-
         contentPane.add(btnParar);
+
         JButton btnDir = new JButton("DIREITA");
         btnDir.setBackground(Color.BLUE);
         btnDir.setBounds(335, 140, 99, 32);
         btnDir.addActionListener(e -> {
-        	try {
-        	    db.getServidor().s.acquire();
-        	    db.getServidor().CurvarDireita(db.getUltimoRaio(), db.getUltimoAngulo());
-        	    db.getServidor().Parar(false);
-        	} catch (InterruptedException e1) {
-        	    Thread.currentThread().interrupt();
-        	} finally {
-        	    db.getServidor().s.release();
-        	}
-            MyPrint("robot fez uma curva direita com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
-            
+            Comando c = new Comando("CURVA_DIREITA", db.getUltimoAngulo(), db.getUltimoRaio());
+            enviarComandoAsync(c);
+            gravador.registarComando(c);  // registra o comando
         });
         contentPane.add(btnDir);
 
@@ -122,17 +98,9 @@ public class GUI2 extends JFrame {
         btnEsq.setBackground(new Color(255, 128, 192));
         btnEsq.setBounds(139, 140, 99, 32);
         btnEsq.addActionListener(e -> {
-        	try {
-        	    db.getServidor().s.acquire();
-        	    db.getServidor().CurvarEsquerda(db.getUltimoRaio(), db.getUltimoAngulo());
-        	    db.getServidor().Parar(false);
-        	} catch (InterruptedException e1) {
-        	    Thread.currentThread().interrupt();
-        	} finally {
-        	    db.getServidor().s.release();
-        	}
-            MyPrint("robot fez uma curva esquerda com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
-            
+            Comando c = new Comando("CURVA_ESQUERDA", db.getUltimoAngulo(), db.getUltimoRaio());
+            enviarComandoAsync(c);
+            gravador.registarComando(c);  // registra o comando
         });
         contentPane.add(btnEsq);
 
@@ -140,11 +108,13 @@ public class GUI2 extends JFrame {
         JCheckBox checkLigar = new JCheckBox("Ligar");
         checkLigar.setBounds(36, 36, 97, 23);
         checkLigar.setBackground(Color.WHITE);
+        checkLigar.setEnabled(false);
         checkLigar.setSelected(db.isRobotAberto());
         checkLigar.addActionListener(e -> {
+       
             if (db.isRobotAberto()) {
                 // Desligar o robô
-                db.getServidor().CloseEV3();
+                db.getServidor().closeEV3();
                 db.setRobotAberto(false);
                 textField_Robot2.setText("");
                 MyPrint("Servidor bloqueado e conexão encerrada.");
@@ -153,7 +123,7 @@ public class GUI2 extends JFrame {
 
             } else {
                 // Ligar o robô
-                boolean aberto = db.getServidor().OpenEV3(db.getNomeRobot());
+                boolean aberto = db.getServidor().openEV3(db.getNomeRobot());
                 db.setRobotAberto(aberto);
                 if (aberto) {
                     db.getServidor().desbloquear();
@@ -166,6 +136,7 @@ public class GUI2 extends JFrame {
                     MyPrint("Falha ao abrir conexão com o robô.");
                 }
             }
+    
             checkLigar.setSelected(db.isRobotAberto());
         });
 
@@ -219,16 +190,7 @@ public class GUI2 extends JFrame {
         });
         contentPane.add(textField_Raio2);
 
-        // Robot
-        JLabel lblRobot = new JLabel("ROBOT");
-        lblRobot.setBounds(516, 37, 56, 16);
-        contentPane.add(lblRobot);
-
-        textField_Robot2 = new JTextField();
-        textField_Robot2.setColumns(10);
-        textField_Robot2.setBounds(575, 31, 50, 22);
-        contentPane.add(textField_Robot2);
-
+      
         
         // ------------------- CONSOLE ----------------------
         JScrollPane scrollPane = new JScrollPane();
@@ -306,7 +268,19 @@ public class GUI2 extends JFrame {
 
                 btnLimpar.setBounds(166, 576, 85, 21);
                 contentPane.add(btnLimpar);
-             
+                
+                JButton btnEvitar = new JButton("Evitar");
+                btnEvitar.setBounds(524, 143, 105, 27);
+                contentPane.add(btnEvitar);
+
+                btnEvitar.addActionListener(e -> {
+                   
+                    if (db.getServidor().getRobot() != null) {
+                    	db.getServidor().getRobot().simularToque();
+                        MyPrint("Toque simulado (Evitar).");
+                    }
+                });
+
              
 
         // ------------------- WINDOW CLOSE ----------------------
@@ -314,21 +288,26 @@ public class GUI2 extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 if (db.isRobotAberto()) {
-                	db.getServidor().Parar(true);
-                    db.getServidor().CloseEV3();
+                	db.getServidor().pararForcado();
+                    db.getServidor().closeEV3();
                 }
                
                 db.setTerminar(true);
             }
         });
+        setVisible(true); 
     }
 
-    public BaseDados getDB() {
-        return db;
+    // ================= MÉTODO CENTRAL =================
+    private void enviarComandoAsync(Comando c) {
+        new Thread(() -> {
+            try {
+                db.getServidor().inserirComandoAposBloco(c);
+                MyPrint("Comando enviado: " + c);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }).start();
     }
 
-    public void setDB(BaseDados db) {
-        this.db = db;
-    }
 }
-

@@ -1,42 +1,53 @@
 public class Application {
 
-    private GUI gui;
-    private GUI2 gui2;
-    private BaseDados db;
-    private Gravador gravador;
-    private EvitarObstaculo evitar;
+    private final BaseDados db;
+    private final GUI gui;
+    private final GUI2 gui2;
+    private final EvitarObstaculo evitar;
+    private final Gravador gravador;
 
     public Application() {
-        // Inicializar BaseDados
+        // 1. Criar estado global
         db = new BaseDados();
-
-        // Inicializar Gravador
-        gravador = db.getGravador();
-
-        // Inicializar EvitarObstaculo com Gravador
-        evitar = new EvitarObstaculo(db, gravador);
-
-        // Inicializar GUIs
+   
+        // 2. Criar tarefas dependentes do estado
+        evitar = new EvitarObstaculo(db, db.getGravador());
+        gravador = new Gravador(db.getBufferRec());
+        // 3. Criar interfaces
         gui = new GUI(this);
         gui2 = new GUI2(this);
 
-        // Mostrar GUIs
-        gui.setVisible(true);
-        gui2.setVisible(true);
+    
     }
 
-    public BaseDados getDB() { return db; }
-
-    public static void main(String[] args) {
-        new Application().run();
+    public BaseDados getDB() {
+        return db;
     }
 
     public void run() {
-        System.out.println("A aplicação começou!");
+        System.out.println("Aplicação iniciada.");
+
         while (!db.isTerminar()) {
-            try { Thread.sleep(100); } catch (InterruptedException e) { e.printStackTrace(); }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                break;
+            }
         }
+
+        // Encerramento controlado
+        if (db.isRobotAberto()) {
+            db.getServidor().pararForcado();
+            db.getServidor().closeEV3();
+        }
+
         db.getServidor().interrupt();
-        System.out.println("A aplicação terminou!");
+        //evitar.interrupt();
+
+        System.out.println("Aplicação terminada.");
+    }
+
+    public static void main(String[] args) {
+        new Application().run();
     }
 }

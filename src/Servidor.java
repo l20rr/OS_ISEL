@@ -1,141 +1,155 @@
-/*Thread consumidor
- * 
- * Executa comandos do buffer e simula o tempo real de movimento
- * 
- * *****/
-
 import java.util.Objects;
 import java.util.concurrent.Semaphore;
 
 public class Servidor extends Tarefa {
-    public final BufferCircular buffer;
-    
-    private final BaseDados db;
-    public final RobotLegoEV3 robot;
-    public final Semaphore s = new Semaphore(1); //sincronização com a gui
-    
 
+    private final BaseDados db;
+    final RobotLegoEV3Simula robot;
+    private final BufferCircular buffer;
+    private final Semaphore semBloco = new Semaphore(1, true);
+
+    private final double vel = 0.02; // cm/ms
+    private final int comunicacao = 100;
+	
+    
     public Servidor(BufferCircular buffer, BaseDados db) {
         this.buffer = Objects.requireNonNull(buffer);
         this.db = Objects.requireNonNull(db);
-        this.robot = new RobotLegoEV3();
-        this.start();
+        this.robot = new RobotLegoEV3Simula();
+        start();
     }
-
-
-    private final double vel = 0.02;
-    private final int comunicacao = 100;
     
-    
-    public void Reta(int distancia) { 
-    	buffer.inserirElemento(new Comando("RETA", distancia, 0)); 
-    	db.getGravador().registarComando(new Comando("RETA", distancia, 0));
-    }
-    public void CurvarDireita(int raio, int angulo) { 
-    	buffer.inserirElemento(new Comando("CURVA_DIREITA", raio, angulo)); 
-    	db.getGravador().registarComando(new Comando("CURVA_DIREITA", raio, angulo));
-    
-    }
-    public void CurvarEsquerda(int raio, int angulo) { 
-    	buffer.inserirElemento(new Comando("CURVA_ESQUERDA", raio, angulo)); 
-    	db.getGravador().registarComando(new Comando("CURVA_ESQUERDA", raio, angulo));
+    public RobotLegoEV3Simula getRobot() {
+        return robot;
     }
 
-    public void Parar(boolean forcar) {
-        if (forcar) {
-            System.out.println("[Servidor] Parada forçada — limpando buffer e parando robô.");
-            buffer.limpar();         // esvazia todos os comandos pendentes
-            robot.Parar(true);       // para imediatamente o robô
-           
-        } else {
-            buffer.inserirElemento(new Comando("PARAR", 0, 0));
-            db.getGravador().registarComando(new Comando("PARAR", 0, 0));
-        }
-    }
 
-    public synchronized boolean OpenEV3(String nomeRobot) {
+    // ==== Controle do robô ====
+    public synchronized boolean openEV3(String nomeRobot) {
         boolean ok = robot.OpenEV3(nomeRobot);
-        if (ok) {
-            db.setRobotAberto(true);
-            desbloquear(); // acorda a thread se estava bloqueada
-            
-        } else {
-            db.setRobotAberto(false);
-        }
+        db.setRobotAberto(ok);
+        if (ok) desbloquear(); // libera execução
+        else bloquear();
         return ok;
     }
+    
+    public void pararForcado() {
+    	 semBloco.drainPermits(); // mata qualquer bloco
+    	    semBloco.release();     // reabre sistema
 
-    public synchronized void CloseEV3() {
-        robot.CloseEV3();
-        db.setRobotAberto(false);
-        bloquear(); // pausa a thread até reabrir
+    	    buffer.limpar();
+    	    robot.Parar(true);
+        //gravador.registarComando(c);
     }
 
     @Override
-    protected void runing() {
+    protected void executar() {
         try {
-            Comando c = buffer.removerElemento();
-            if (c != null) executarComandoNoRobot(c);
+            Comando comando = buffer.removerElemento();
+            if (comando != null) {
+                executarNoRobot(comando);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-    public int tempoReta(int d) {
-        // d está em cm, vel em cm/ms → resultado em ms
-        return (int) ((d / vel) + comunicacao);
+
+
+    public void inserirComando(Comando c) {
+        buffer.inserirElemento(c);
+        db.getGravador().registarComando(c);
     }
 
-    public int tempoCurva(int r, int a) {
-        double rad = 2 * Math.PI * r * (a / 360.0);
-        return (int) ((rad / vel) + comunicacao);
+    public void iniciarBloco() throws InterruptedException {
+        semBloco.acquire(); // 🔒 bloqueia outros produtores
+    }
+
+    public void terminarBloco() {
+        semBloco.release(); // 🔓 libera o sistema
+    }
+    
+    public void inserirComandoAposBloco(Comando c) throws InterruptedException {
+        semBloco.acquire();      // ⏳ espera bloco terminar
+        try {
+            inserirComando(c);   // entra em ordem
+        } finally {
+            semBloco.release();  // libera
+        }
+    }
+
+
+    public synchronized void closeEV3() {
+        robot.CloseEV3();
+        db.setRobotAberto(false);
+        bloquear(); // pausa execução até reabrir
+    }
+
+    public void parar(boolean forcar) {
+        if (forcar) {
+            buffer.limpar();
+            robot.Parar(true);
+        } else {
+            buffer.inserirElemento(new Comando("PARAR", 0, 0));
+        }
+    }
+
+  
+
+    // ==== Encapsula lógica de execução ====
+    private void executarNoRobot(Comando c) {
+        switch (c.getTipo()) {
+            case "RETA":
+                synchronized (robot) {
+                    robot.Reta(c.getArg1());
+                }
+                sleepTempo(tempoReta(c.getArg1()));
+                break;
+            case "CURVA_DIREITA":
+                synchronized (robot) {
+                    robot.CurvarDireita(c.getArg1(), c.getArg2());
+                }
+                sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
+                break;
+            case "CURVA_ESQUERDA":
+                synchronized (robot) {
+                    robot.CurvarEsquerda(c.getArg1(), c.getArg2());
+                }
+                sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
+                break;
+            case "PARAR":
+                synchronized (robot) {
+                    robot.Parar(false);
+                }
+                sleepTempo(tempoParar());
+                break;
+            default:
+                System.out.println("[Servidor] Comando desconhecido: " + c.getTipo());
+        }
+    }
+
+    // ==== Tempos de execução ====
+    public int tempoReta(int distancia) {
+        return (int)((distancia / vel) + comunicacao);
+    }
+
+    public int tempoCurva(int raio, int angulo) {
+        double comprimento = 2 * Math.PI * raio * (angulo / 360.0);
+        return (int)((comprimento / vel) + comunicacao);
     }
 
     public int tempoParar() {
         return comunicacao;
     }
 
-
-    private void executarComandoNoRobot(Comando c) {
-        if (c == null) return;
-        
-        
-        		switch (c.getTipo()) {
-                case "RETA":
-                	synchronized (robot) {
-                		robot.Reta(c.getArg1());
-                	}
-                    sleepTempo(tempoReta(c.getArg1()));
-                    break;
-                case "CURVA_DIREITA":
-                	synchronized (robot) {
-                		robot.CurvarDireita(c.getArg1(), c.getArg2());
-                	}
-                    sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
-                    break;
-                case "CURVA_ESQUERDA":
-                	synchronized (robot) {
-                		robot.CurvarEsquerda(c.getArg1(), c.getArg2());
-                	}
-                    sleepTempo(tempoCurva(c.getArg1(), c.getArg2()));
-                    break;
-                case "PARAR":
-                	synchronized (robot) {
-                		robot.Parar(false);
-                	}
-                    sleepTempo(tempoParar());
-                    break;
-            
-        	}
-            
-    }
-
-    
-
-
-    
-    
     private void sleepTempo(int ms) {
-        try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        if (ms < 0) {
+            ms = -ms; // transforma negativo em positivo
+        }
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
+
 }

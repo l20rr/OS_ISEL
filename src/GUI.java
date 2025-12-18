@@ -1,70 +1,51 @@
-import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.Beans;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class GUI extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
-    private boolean sensorAtivoSimulado = false;
 
+    private JPanel contentPane;
     private JTextField textField_Distancia;
     private JTextField textField_Angulo;
-    private JTextField textField_Robot;
     private JTextField textField_Raio;
-    private JTextArea textArea_console; 
+    private JTextField textField_Robot;
+    private JTextArea textArea_console;
     private Gravador gravador;
-
-    private BaseDados db;   
-    private MovimentosAleatorios movimentoAleatorioAtivo = null;
+    private BaseDados db;
+    private MovimentosAleatorios movimentoAleatorioAtivo;
 
     public void MyPrint(String msg) {
-        SwingUtilities.invokeLater(() -> textArea_console.append(msg + "\n"));
+        SwingUtilities.invokeLater(() ->
+                textArea_console.append(msg + "\n")
+        );
     }
-    private EvitarObstaculo evitar; 
-    private JTextField textField;
-
 
     public GUI(Application app) {
-    	 this.db = app.getDB();
-    	 this.gravador = db.getGravador();
-    	 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    	    setBounds(100, 100, 673, 644);
+        this.db = app.getDB();
+        this.gravador = db.getGravador();
 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 673, 644);
+
+        // ================= CONTENT PANE =================
         contentPane = new JPanel();
         contentPane.setBackground(Color.WHITE);
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        setContentPane(contentPane);
         contentPane.setLayout(null);
-        
+        setContentPane(contentPane);
 
-
-        // ------------------- BOTÕES ----------------------
+        // ================= BOTÕES =================
         JButton btnFrente = new JButton("FRENTE");
         btnFrente.setBackground(Color.GREEN);
         btnFrente.setBounds(237, 108, 99, 32);
         btnFrente.addActionListener(e -> {
-        	try {
-        	    db.getServidor().s.acquire();
-        	    db.getServidor().Reta(db.getUltimaDistancia());
-        	    db.getServidor().Parar(false);
-        	} catch (InterruptedException e1) {
-        	    Thread.currentThread().interrupt();
-        	} finally {
-        	    db.getServidor().s.release();
-        	}
-            MyPrint("fiz uma reta com " + db.getUltimaDistancia());
-            Comando comando = new Comando("FRENTE", db.getUltimaDistancia(), 0);
-            gravador.registarComando(comando);
+            Comando c = new Comando("RETA", db.getUltimaDistancia(), 0);
+            enviarComandoAsync(c);
+            gravador.registarComando(c); 
         });
         contentPane.add(btnFrente);
 
@@ -72,18 +53,9 @@ public class GUI extends JFrame {
         btnTras.setBackground(new Color(255, 128, 64));
         btnTras.setBounds(237, 171, 99, 32);
         btnTras.addActionListener(e -> {
-        	try {
-        	    db.getServidor().s.acquire();
-        	    db.getServidor().Reta(- db.getUltimaDistancia());
-        	    db.getServidor().Parar(false);
-        	} catch (InterruptedException e1) {
-        	    Thread.currentThread().interrupt();
-        	} finally {
-        	    db.getServidor().s.release();
-        	}
-            MyPrint("fiz uma marcha trás com " + db.getUltimaDistancia());
-            Comando comando = new Comando("TRAS", db.getUltimaDistancia(), 0);
-            gravador.registarComando(comando);
+            Comando c = new Comando("RETA", -db.getUltimaDistancia(), 0);
+            enviarComandoAsync(c);
+            gravador.registarComando(c);  // registra o comando
         });
         contentPane.add(btnTras);
 
@@ -94,32 +66,22 @@ public class GUI extends JFrame {
             if (movimentoAleatorioAtivo != null) {
                 movimentoAleatorioAtivo.bloquear();
                 movimentoAleatorioAtivo = null;
-                MyPrint("Movimentos aleatórios bloqueados.");
+                MyPrint("Geração de movimentos aleatórios parada.");
             }
-
-            db.getServidor().Parar(true); // agora é seguro
-            MyPrint("Robô parado (forçado), buffer limpo, servidor continua ativo.");
-            Comando comando = new Comando("PARAR", 0, 0);
-            gravador.registarComando(comando);
+            db.getServidor().pararForcado();
+            MyPrint("Robô parado (forçado).");
+            Comando c = new Comando("PARAR",0, 0);
+            gravador.registarComando(c); 
         });
-
         contentPane.add(btnParar);
+
         JButton btnDir = new JButton("DIREITA");
         btnDir.setBackground(Color.BLUE);
         btnDir.setBounds(335, 140, 99, 32);
         btnDir.addActionListener(e -> {
-        	try {
-        	    db.getServidor().s.acquire();
-        	    db.getServidor().CurvarDireita(db.getUltimoRaio(), db.getUltimoAngulo());
-        	    db.getServidor().Parar(false);
-        	} catch (InterruptedException e1) {
-        	    Thread.currentThread().interrupt();
-        	} finally {
-        	    db.getServidor().s.release();
-        	}
-            MyPrint("robot fez uma curva direita com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
-            Comando comando = new Comando("DIREITA", db.getUltimoRaio(), db.getUltimoAngulo());
-            gravador.registarComando(comando);
+            Comando c = new Comando("CURVA_DIREITA", db.getUltimoAngulo(), db.getUltimoRaio());
+            enviarComandoAsync(c);
+            gravador.registarComando(c);  // registra o comando
         });
         contentPane.add(btnDir);
 
@@ -127,195 +89,150 @@ public class GUI extends JFrame {
         btnEsq.setBackground(new Color(255, 128, 192));
         btnEsq.setBounds(139, 140, 99, 32);
         btnEsq.addActionListener(e -> {
-        	try {
-        	    db.getServidor().s.acquire();
-        	    db.getServidor().CurvarEsquerda(db.getUltimoRaio(), db.getUltimoAngulo());
-        	    db.getServidor().Parar(false);
-        	} catch (InterruptedException e1) {
-        	    Thread.currentThread().interrupt();
-        	} finally {
-        	    db.getServidor().s.release();
-        	}
-            MyPrint("robot fez uma curva esquerda com ângulo " + db.getUltimoAngulo() + " e raio " + db.getUltimoRaio());
-            Comando comando = new Comando("ESQUERDA", db.getUltimoRaio(), db.getUltimoAngulo());
-            gravador.registarComando(comando);
+            Comando c = new Comando("CURVA_ESQUERDA", db.getUltimoAngulo(), db.getUltimoRaio());
+            enviarComandoAsync(c);
+            gravador.registarComando(c);  // registra o comando
         });
         contentPane.add(btnEsq);
 
-        // ------------------- CHECKBOX LIGAR ----------------------
+        // ================= CHECKBOX LIGAR =================
         JCheckBox checkLigar = new JCheckBox("Ligar");
         checkLigar.setBounds(36, 36, 97, 23);
         checkLigar.setBackground(Color.WHITE);
         checkLigar.setSelected(db.isRobotAberto());
         checkLigar.addActionListener(e -> {
             if (db.isRobotAberto()) {
-                // Desligar o robô
-                db.getServidor().CloseEV3();
+                db.getServidor().closeEV3();
                 db.setRobotAberto(false);
                 textField_Robot.setText("");
-                MyPrint("Servidor bloqueado e conexão encerrada.");
-
-                if (evitar != null) evitar.bloquear();
-
+                MyPrint("Servidor desligado.");
             } else {
-                // Ligar o robô
-                boolean aberto = db.getServidor().OpenEV3(db.getNomeRobot());
-                db.setRobotAberto(aberto);
-                if (aberto) {
+                boolean ok = db.getServidor().openEV3(db.getNomeRobot());
+                db.setRobotAberto(ok);
+                if (ok) {
                     db.getServidor().desbloquear();
                     textField_Robot.setText(db.getNomeRobot());
-                    MyPrint("Servidor desbloqueado e ativo.");
-
-                    // Evitar já foi criado na Application, apenas desbloquear
-                    if (evitar != null) evitar.desbloquear(); 
+                    MyPrint("Servidor ligado.");
                 } else {
-                    MyPrint("Falha ao abrir conexão com o robô.");
+                    MyPrint("Erro ao ligar robô.");
                 }
             }
             checkLigar.setSelected(db.isRobotAberto());
         });
-
-
-
         contentPane.add(checkLigar);
 
-        // ------------------- CAMPOS ----------------------
-        // Distância
+        // ================= CAMPOS =================
         JLabel lblDistancia = new JLabel("Distância");
-        lblDistancia.setFont(new Font("Tahoma", Font.PLAIN, 13));
         lblDistancia.setBounds(369, 30, 70, 32);
         contentPane.add(lblDistancia);
 
         textField_Distancia = new JTextField("" + db.getUltimaDistancia());
         textField_Distancia.setBounds(430, 36, 50, 22);
-        textField_Distancia.setColumns(10);
-        textField_Distancia.addActionListener(e -> {
-            db.setUltimaDistancia(Integer.parseInt(textField_Distancia.getText()));
-            MyPrint("a distancia foi alterada para : " + db.getUltimaDistancia());
-        });
+        textField_Distancia.addActionListener(e ->
+                db.setUltimaDistancia(Integer.parseInt(textField_Distancia.getText()))
+        );
         contentPane.add(textField_Distancia);
 
-        // Ângulo
         JLabel lblAngulo = new JLabel("Ângulo");
-        lblAngulo.setFont(new Font("Tahoma", Font.PLAIN, 13));
         lblAngulo.setBounds(166, 30, 70, 32);
         contentPane.add(lblAngulo);
 
         textField_Angulo = new JTextField("" + db.getUltimoAngulo());
-        textField_Angulo.setColumns(10);
         textField_Angulo.setBounds(210, 36, 50, 22);
-        textField_Angulo.addActionListener(e -> {
-            db.setUltimoAngulo(Integer.parseInt(textField_Angulo.getText()));
-            MyPrint("o ângulo foi alterado para : " + db.getUltimoAngulo());
-        });
+        textField_Angulo.addActionListener(e ->
+                db.setUltimoAngulo(Integer.parseInt(textField_Angulo.getText()))
+        );
         contentPane.add(textField_Angulo);
 
-        // Raio
         JLabel lblRaio = new JLabel("Raio");
-        lblRaio.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        lblRaio.setBounds(277, 30, 34, 32);
+        lblRaio.setBounds(277, 30, 50, 32);
         contentPane.add(lblRaio);
 
         textField_Raio = new JTextField("" + db.getUltimoRaio());
-        textField_Raio.setColumns(10);
         textField_Raio.setBounds(308, 36, 50, 22);
-        textField_Raio.addActionListener(e -> {
-            db.setUltimoRaio(Integer.parseInt(textField_Raio.getText()));
-            MyPrint("o raio foi alterado para : " + db.getUltimoRaio());
-        });
+        textField_Raio.addActionListener(e ->
+                db.setUltimoRaio(Integer.parseInt(textField_Raio.getText()))
+        );
         contentPane.add(textField_Raio);
 
-        // Robot
         JLabel lblRobot = new JLabel("ROBOT");
         lblRobot.setBounds(516, 37, 56, 16);
         contentPane.add(lblRobot);
 
         textField_Robot = new JTextField();
-        textField_Robot.setColumns(10);
         textField_Robot.setBounds(575, 31, 50, 22);
         contentPane.add(textField_Robot);
 
-        // ------------------- MOVIMENTOS ALEATÓRIOS ----------------------
+        // ================= MOVIMENTOS ALEATÓRIOS =================
         JLabel lblNumero = new JLabel("Número:");
-        lblNumero.setFont(new Font("Tahoma", Font.PLAIN, 13));
         lblNumero.setBounds(475, 195, 65, 25);
         contentPane.add(lblNumero);
 
-        JSpinner spinner = new JSpinner();
-        spinner.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        
+        SpinnerNumberModel model = new SpinnerNumberModel(1, 1, 16, 1);
+        JSpinner spinner = new JSpinner(model);
         spinner.setBounds(527, 191, 56, 32);
         contentPane.add(spinner);
 
         JRadioButton rdbtnMovAlt = new JRadioButton("Movimentos Aleatórios");
-        rdbtnMovAlt.setBackground(Color.WHITE);
         rdbtnMovAlt.setBounds(460, 160, 210, 25);
+        rdbtnMovAlt.setBackground(Color.WHITE);
+        rdbtnMovAlt.addActionListener(e -> {
+            if (!rdbtnMovAlt.isSelected()) {
+                if (movimentoAleatorioAtivo != null) {
+                    movimentoAleatorioAtivo.bloquear();
+                    movimentoAleatorioAtivo = null;
+                    MyPrint("Geração de movimentos aleatórios parada.");
+                }
+                return;
+            }
+            int qtd = (int) spinner.getValue();
+            if (movimentoAleatorioAtivo == null) {
+                movimentoAleatorioAtivo = new MovimentosAleatorios(db, qtd, this);
+                movimentoAleatorioAtivo.start();
+            }
+            movimentoAleatorioAtivo.desbloquear();
+            MyPrint("Gerando blocos de " + qtd + " movimentos aleatórios...");
+        });
         contentPane.add(rdbtnMovAlt);
 
-        rdbtnMovAlt.addActionListener(e -> {
-        	if (!rdbtnMovAlt.isSelected()) {
-        	    if (movimentoAleatorioAtivo != null) {
-        	    	movimentoAleatorioAtivo.interrupt();
-        	    	movimentoAleatorioAtivo.bloquear(); 
-        	        movimentoAleatorioAtivo = null;
-        	        MyPrint("Movimentos aleatórios bloqueados.");
-        	    }
-
-        	    db.getServidor().Parar(true); // para completamente e limpa buffer
-        	    MyPrint("Parada forçada após desativar movimentos aleatórios.");
-        	    return;
-        	}
-
-
-            int qtd = (int) spinner.getValue();
-            movimentoAleatorioAtivo = new MovimentosAleatorios(db, qtd, this);
-            movimentoAleatorioAtivo.start();       // inicia uma única vez
-            movimentoAleatorioAtivo.desbloquear(); // começa o loop de runing()
-            MyPrint("Gerando " + qtd + " movimentos aleatórios...");
-        });
-        // ------------------- CONSOLE ----------------------
+        // ================= CONSOLE =================
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(75, 290, 520, 160);
         contentPane.add(scrollPane);
 
         textArea_console = new JTextArea();
-        scrollPane.setViewportView(textArea_console);   
+        scrollPane.setViewportView(textArea_console);
 
         JLabel lblConsole = new JLabel("Consola:");
-        lblConsole.setFont(new Font("Tahoma", Font.PLAIN, 13));
         lblConsole.setBounds(65, 270, 82, 16);
         contentPane.add(lblConsole);
 
-        JButton btnLimpar = new JButton("Limpar");
-        btnLimpar.addActionListener(e -> {
-        	textArea_console.setText(""); // limpa todo o conteúdo
-        });
-        btnLimpar.setBounds(170, 460, 100, 28);
-        contentPane.add(btnLimpar);
-
-        JCheckBox chckbxImprimirCheckBox = new JCheckBox("Imprimir");
-        chckbxImprimirCheckBox.setBounds(410, 460, 100, 28);
-        contentPane.add(chckbxImprimirCheckBox);
-
-
-        // ------------------- WINDOW CLOSE ----------------------
+        // ================= WINDOW CLOSE =================
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 if (db.isRobotAberto()) {
-                	db.getServidor().Parar(true);
-                    db.getServidor().CloseEV3();
+                    db.getServidor().pararForcado();
+                    db.getServidor().closeEV3();
                 }
-               
                 db.setTerminar(true);
             }
         });
+
+        // ================= MOSTRAR A JANELA =================
+        setVisible(true); // ✅ Chamar somente no final do construtor
     }
 
-    public BaseDados getDB() {
-        return db;
-    }
-
-    public void setDB(BaseDados db) {
-        this.db = db;
+    // ================= MÉTODO CENTRAL =================
+    private void enviarComandoAsync(Comando c) {
+        new Thread(() -> {
+            try {
+                db.getServidor().inserirComandoAposBloco(c);
+                MyPrint("Comando enviado: " + c);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }).start();
     }
 }

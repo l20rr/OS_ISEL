@@ -1,12 +1,4 @@
-/*
- * Criar buffer2 
- * enviar os comandos que o usuario fez para o novo buffer
- * buffer <-> gravador (comunicação direta)
- * GUI2(parar) vai enviar os comandos do buffer para um arquivo .txt
- * Robot le esse arquivo 
- * 
- * !!!! ter ToString para os comandos e para o buffer2!!!! 
- * */
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
