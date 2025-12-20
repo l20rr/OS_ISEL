@@ -26,14 +26,14 @@ public class MovimentosAleatorios extends Tarefa {
         }
 
         try {
-            // 🔒 iniciar novo bloco se ainda não iniciou
+            // iniciar novo bloco se ainda não iniciou
             if (!blocoAdquirido) {
                 servidor.iniciarBloco();
                 blocoAdquirido = true;
                 contador = 0;
             }
 
-            // ✅ bloco terminou → fecha bloco e prepara o próximo
+            // bloco terminou → fecha bloco e prepara o próximo
             if (contador >= quantidadeComandos) {
                 servidor.inserirComando(new Comando("PARAR", 0, 0));
                 if (gui != null) gui.MyPrint("Bloco terminado");
@@ -43,7 +43,7 @@ public class MovimentosAleatorios extends Tarefa {
 
                 // pausa pequena antes do próximo bloco
                 Thread.sleep(200);
-                return; // ⚠️ NÃO bloquear, continua vivo
+                return; // NÃO bloquear, continua vivo
             }
 
             // gera comando normal

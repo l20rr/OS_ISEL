@@ -17,7 +17,6 @@ public class Gravador {
     public Gravador(BufferRec bufferRec) {
         this.bufferRec = bufferRec;
     }
-
     // Ativa ou desativa a gravação
     public void setGravando(boolean gravando) {
         this.gravando = gravando;
@@ -26,14 +25,11 @@ public class Gravador {
     public boolean isGravando() {
         return gravando;
     }
-
-    
     public void registarComando(Comando comando) {
         if (gravando) {
             bufferRec.inserirElemento(comando);
         }
     }
-    
     public void fileWriter() {
         try {
             OutputStream os = new FileOutputStream("Comandos.txt");
@@ -51,41 +47,18 @@ public class Gravador {
         }
     }
     public String fileReader() {
-
-
         StringBuilder sb = new StringBuilder();
-
-
         try (Reader reader = new InputStreamReader(new FileInputStream("Comandos.txt"), "UTF-8")) {
-
-
             int c;
-
-
             while ((c = reader.read()) != -1) {
-
-
                 sb.append((char) c);
-
-
             }
-
-
-
-
-
         } catch (IOException e) {
-
             System.out.println("Erro ao ler o arquivo: " + e.getMessage());
-
         }
-
-
         return sb.toString();
 
     }
-
-    
     public String bufferToString() {
         StringBuilder sb = new StringBuilder();
         while (!bufferRec.estaVazio()) {

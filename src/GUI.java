@@ -14,9 +14,15 @@ public class GUI extends JFrame {
     private JTextField textField_Raio;
     private JTextField textField_Robot;
     private JTextArea textArea_console;
+
     private Gravador gravador;
     private BaseDados db;
     private MovimentosAleatorios movimentoAleatorioAtivo;
+
+    // ===== PARÂMETROS PRÓPRIOS DA GUI =====
+    private int distancia = 20;
+    private int angulo = 90;
+    private int raio = 10;
 
     public void MyPrint(String msg) {
         SwingUtilities.invokeLater(() ->
@@ -43,9 +49,9 @@ public class GUI extends JFrame {
         btnFrente.setBackground(Color.GREEN);
         btnFrente.setBounds(237, 108, 99, 32);
         btnFrente.addActionListener(e -> {
-            Comando c = new Comando("RETA", db.getUltimaDistancia(), 0);
+            Comando c = new Comando("RETA", distancia, 0);
             enviarComandoAsync(c);
-            gravador.registarComando(c); 
+            gravador.registarComando(c);
         });
         contentPane.add(btnFrente);
 
@@ -53,9 +59,9 @@ public class GUI extends JFrame {
         btnTras.setBackground(new Color(255, 128, 64));
         btnTras.setBounds(237, 171, 99, 32);
         btnTras.addActionListener(e -> {
-            Comando c = new Comando("RETA", -db.getUltimaDistancia(), 0);
+            Comando c = new Comando("RETA", -distancia, 0);
             enviarComandoAsync(c);
-            gravador.registarComando(c);  // registra o comando
+            gravador.registarComando(c);
         });
         contentPane.add(btnTras);
 
@@ -70,8 +76,7 @@ public class GUI extends JFrame {
             }
             db.getServidor().pararForcado();
             MyPrint("Robô parado (forçado).");
-            Comando c = new Comando("PARAR",0, 0);
-            gravador.registarComando(c); 
+            gravador.registarComando(new Comando("PARAR", 0, 0));
         });
         contentPane.add(btnParar);
 
@@ -79,9 +84,9 @@ public class GUI extends JFrame {
         btnDir.setBackground(Color.BLUE);
         btnDir.setBounds(335, 140, 99, 32);
         btnDir.addActionListener(e -> {
-            Comando c = new Comando("CURVA_DIREITA", db.getUltimoAngulo(), db.getUltimoRaio());
+            Comando c = new Comando("CURVA_DIREITA", angulo, raio);
             enviarComandoAsync(c);
-            gravador.registarComando(c);  // registra o comando
+            gravador.registarComando(c);
         });
         contentPane.add(btnDir);
 
@@ -89,9 +94,9 @@ public class GUI extends JFrame {
         btnEsq.setBackground(new Color(255, 128, 192));
         btnEsq.setBounds(139, 140, 99, 32);
         btnEsq.addActionListener(e -> {
-            Comando c = new Comando("CURVA_ESQUERDA", db.getUltimoAngulo(), db.getUltimoRaio());
+            Comando c = new Comando("CURVA_ESQUERDA", angulo, raio);
             enviarComandoAsync(c);
-            gravador.registarComando(c);  // registra o comando
+            gravador.registarComando(c);
         });
         contentPane.add(btnEsq);
 
@@ -126,33 +131,36 @@ public class GUI extends JFrame {
         lblDistancia.setBounds(369, 30, 70, 32);
         contentPane.add(lblDistancia);
 
-        textField_Distancia = new JTextField("" + db.getUltimaDistancia());
+        textField_Distancia = new JTextField(String.valueOf(distancia));
         textField_Distancia.setBounds(430, 36, 50, 22);
-        textField_Distancia.addActionListener(e ->
-                db.setUltimaDistancia(Integer.parseInt(textField_Distancia.getText()))
-        );
+        textField_Distancia.addActionListener(e -> {
+            distancia = Integer.parseInt(textField_Distancia.getText());
+            MyPrint("Distância alterada para: " + distancia);
+        });
         contentPane.add(textField_Distancia);
 
         JLabel lblAngulo = new JLabel("Ângulo");
         lblAngulo.setBounds(166, 30, 70, 32);
         contentPane.add(lblAngulo);
 
-        textField_Angulo = new JTextField("" + db.getUltimoAngulo());
+        textField_Angulo = new JTextField(String.valueOf(angulo));
         textField_Angulo.setBounds(210, 36, 50, 22);
-        textField_Angulo.addActionListener(e ->
-                db.setUltimoAngulo(Integer.parseInt(textField_Angulo.getText()))
-        );
+        textField_Angulo.addActionListener(e -> {
+            angulo = Integer.parseInt(textField_Angulo.getText());
+            MyPrint("Ângulo alterado para: " + angulo);
+        });
         contentPane.add(textField_Angulo);
 
         JLabel lblRaio = new JLabel("Raio");
         lblRaio.setBounds(277, 30, 50, 32);
         contentPane.add(lblRaio);
 
-        textField_Raio = new JTextField("" + db.getUltimoRaio());
+        textField_Raio = new JTextField(String.valueOf(raio));
         textField_Raio.setBounds(308, 36, 50, 22);
-        textField_Raio.addActionListener(e ->
-                db.setUltimoRaio(Integer.parseInt(textField_Raio.getText()))
-        );
+        textField_Raio.addActionListener(e -> {
+            raio = Integer.parseInt(textField_Raio.getText());
+            MyPrint("Raio alterado para: " + raio);
+        });
         contentPane.add(textField_Raio);
 
         JLabel lblRobot = new JLabel("ROBOT");
@@ -162,39 +170,6 @@ public class GUI extends JFrame {
         textField_Robot = new JTextField();
         textField_Robot.setBounds(575, 31, 50, 22);
         contentPane.add(textField_Robot);
-
-        // ================= MOVIMENTOS ALEATÓRIOS =================
-        JLabel lblNumero = new JLabel("Número:");
-        lblNumero.setBounds(475, 195, 65, 25);
-        contentPane.add(lblNumero);
-
-        
-        SpinnerNumberModel model = new SpinnerNumberModel(1, 1, 16, 1);
-        JSpinner spinner = new JSpinner(model);
-        spinner.setBounds(527, 191, 56, 32);
-        contentPane.add(spinner);
-
-        JRadioButton rdbtnMovAlt = new JRadioButton("Movimentos Aleatórios");
-        rdbtnMovAlt.setBounds(460, 160, 210, 25);
-        rdbtnMovAlt.setBackground(Color.WHITE);
-        rdbtnMovAlt.addActionListener(e -> {
-            if (!rdbtnMovAlt.isSelected()) {
-                if (movimentoAleatorioAtivo != null) {
-                    movimentoAleatorioAtivo.bloquear();
-                    movimentoAleatorioAtivo = null;
-                    MyPrint("Geração de movimentos aleatórios parada.");
-                }
-                return;
-            }
-            int qtd = (int) spinner.getValue();
-            if (movimentoAleatorioAtivo == null) {
-                movimentoAleatorioAtivo = new MovimentosAleatorios(db, qtd, this);
-                movimentoAleatorioAtivo.start();
-            }
-            movimentoAleatorioAtivo.desbloquear();
-            MyPrint("Gerando blocos de " + qtd + " movimentos aleatórios...");
-        });
-        contentPane.add(rdbtnMovAlt);
 
         // ================= CONSOLE =================
         JScrollPane scrollPane = new JScrollPane();
@@ -220,8 +195,7 @@ public class GUI extends JFrame {
             }
         });
 
-        // ================= MOSTRAR A JANELA =================
-        setVisible(true); // ✅ Chamar somente no final do construtor
+        setVisible(true);
     }
 
     // ================= MÉTODO CENTRAL =================
