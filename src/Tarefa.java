@@ -36,7 +36,7 @@ public abstract class Tarefa extends Thread {
 
                 while (estado == Estado.EXECUTAR && ativo) {
                     executar();
-                    Thread.sleep(20); // cooperação entre threads
+                    Thread.sleep(20);
                 }
 
             } catch (InterruptedException e) {

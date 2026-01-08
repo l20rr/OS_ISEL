@@ -171,6 +171,39 @@ public class GUI extends JFrame {
         textField_Robot.setBounds(575, 31, 50, 22);
         contentPane.add(textField_Robot);
 
+        
+        // ================= MOVIMENTOS ALEATÓRIOS =================
+        JLabel lblNumero = new JLabel("Número:");
+        lblNumero.setBounds(475, 195, 65, 25);
+        contentPane.add(lblNumero);
+
+        
+        SpinnerNumberModel model = new SpinnerNumberModel(1, 1, 16, 1);
+        JSpinner spinner = new JSpinner(model);
+        spinner.setBounds(527, 191, 56, 32);
+        contentPane.add(spinner);
+
+        JRadioButton rdbtnMovAlt = new JRadioButton("Movimentos Aleatórios");
+        rdbtnMovAlt.setBounds(460, 160, 210, 25);
+        rdbtnMovAlt.setBackground(Color.WHITE);
+        rdbtnMovAlt.addActionListener(e -> {
+            if (!rdbtnMovAlt.isSelected()) {
+                if (movimentoAleatorioAtivo != null) {
+                    movimentoAleatorioAtivo.bloquear();
+                    movimentoAleatorioAtivo = null;
+                    MyPrint("Geração de movimentos aleatórios parada.");
+                }
+                return;
+            }
+            int qtd = (int) spinner.getValue();
+            if (movimentoAleatorioAtivo == null) {
+                movimentoAleatorioAtivo = new MovimentosAleatorios(db, qtd, this);
+                movimentoAleatorioAtivo.start();
+            }
+            movimentoAleatorioAtivo.desbloquear();
+            MyPrint("Gerando blocos de " + qtd + " movimentos aleatórios...");
+        });
+        contentPane.add(rdbtnMovAlt);
         // ================= CONSOLE =================
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(75, 290, 520, 160);
